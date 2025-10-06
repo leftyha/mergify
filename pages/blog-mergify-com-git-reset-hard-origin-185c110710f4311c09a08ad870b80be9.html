@@ -1,0 +1,551 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>A Guide to Git Reset Hard Origin</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Learn to safely use git reset hard origin to sync your branches. This guide covers real-world scenarios, recovery steps, and common risks to avoid.">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/git-reset-hard-origin/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A Guide to Git Reset Hard Origin">
+    <meta property="og:description" content="Learn to safely use git reset hard origin to sync your branches. This guide covers real-world scenarios, recovery steps, and common risks to avoid.">
+    <meta property="og:url" content="https://articles.mergify.com/git-reset-hard-origin/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg">
+    <meta property="article:published_time" content="2025-10-02T09:40:19.000Z">
+    <meta property="article:modified_time" content="2025-10-02T09:40:22.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="A Guide to Git Reset Hard Origin">
+    <meta name="twitter:description" content="Learn to safely use git reset hard origin to sync your branches. This guide covers real-world scenarios, recovery steps, and common risks to avoid.">
+    <meta name="twitter:url" content="https://articles.mergify.com/git-reset-hard-origin/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "A Guide to Git Reset Hard Origin",
+    "url": "https://articles.mergify.com/git-reset-hard-origin/",
+    "datePublished": "2025-10-02T09:40:19.000Z",
+    "dateModified": "2025-10-02T09:40:22.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "The command git reset --hard origin/branch-name is the Git equivalent of hitting a big, red &quot;factory reset&quot; button for your local branch. It&#x27;s a forceful way to make your local work an exact mirror of what&#x27;s on the remote server.\n\nWhen you run it, you&#x27;re telling Git: &quot;I don&#x27;t care about any of my local changes or commits. Just make this branch look exactly like origin.&quot; It discards everything—local commits, staged files, and any other modifications—that isn&#x27;t on the remote.\n\n\nDecoding the Git Re",
+    "mainEntityOfPage": "https://articles.mergify.com/git-reset-hard-origin/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="4d8d9436-1d96-4f35-9dc6-6788a7ec0228" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"><div class="gh-announcement-bar dark"><div class="gh-announcement-bar-content"><p dir="ltr"><span>🚀 </span><b><strong>Now GA:</strong></b><span> </span><a href="https://mergify.com/products/ci-insights" rel="noreferrer"><span>CI Insights</span></a><span> helps you spot flaky jobs, cut CI costs, and ship faster. </span><a href="https://dashboard.mergify.com" rel="noreferrer"><span>Try it free</span></a><span>.</span></p></div><button aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16" width="16"><path stroke-linecap="round" stroke-width="0.4" fill="currentColor" stroke="#000000" stroke-linejoin="round" d="M.44,21.44a1.49,1.49,0,0,0,0,2.12,1.5,1.5,0,0,0,2.12,0l9.26-9.26a.25.25,0,0,1,.36,0l9.26,9.26a1.5,1.5,0,0,0,2.12,0,1.49,1.49,0,0,0,0-2.12L14.3,12.18a.25.25,0,0,1,0-.36l9.26-9.26A1.5,1.5,0,0,0,21.44.44L12.18,9.7a.25.25,0,0,1-.36,0L2.56.44A1.5,1.5,0,0,0,.44,2.56L9.7,11.82a.25.25,0,0,1,0,.36Z"></path></svg></button></div></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">A Guide to Git Reset Hard Origin</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-10-02">02 Oct 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 14 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg" alt="A Guide to Git Reset Hard Origin">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>The command <code>git reset --hard origin/branch-name</code> is the Git equivalent of hitting a big, red "factory reset" button for your local branch. It's a forceful way to make your local work an exact mirror of what's on the remote server.</p><p>When you run it, you're telling Git: "I don't care about any of my local changes or commits. Just make this branch look exactly like <code>origin</code>." It discards <em>everything</em>—local commits, staged files, and any other modifications—that isn't on the remote.</p><h2 id="decoding-the-git-reset-hard-origin-command">Decoding the Git Reset Hard Origin Command</h2><p>To really get a feel for this command's power (and potential for destruction), it helps to break it down. It’s not one single action but three distinct pieces working in concert. Each part plays a critical role in the final outcome.</p><p>At its heart, you have <strong><code>git reset</code></strong>, a command for moving the current branch pointer, known as <strong><code>HEAD</code></strong>, to a different commit. This is how Git rewrites history, effectively telling your branch to pretend that a different commit is its most recent one.</p><h3 id="the-components-of-the-command">The Components of the Command</h3><p>The <strong><code>--hard</code></strong> flag is what makes this command so absolute. It’s a powerful instruction that tells Git to not only move the <strong><code>HEAD</code></strong> pointer but also to make your <strong>staging area</strong> and your <strong>working directory</strong> match the target commit perfectly.</p><p>Any uncommitted work you had? Gone. Files you staged but didn't commit? Also gone. It’s a complete wipe.</p><p>Finally, <code><strong>origin/branch-name</strong></code> is the destination. Instead of resetting to a commit on your local machine, you’re pointing to the tip of a branch on your remote repository (which is typically named <code>origin</code>). This is precisely why the command is so useful for getting your local environment back in sync with a shared source of truth.</p><blockquote><strong>Key Takeaway:</strong> The <code>git reset --hard origin/branch-name</code> command is a powerful tool for developers to sync their local Git branch with a remote repository, discarding any local changes that haven't been committed or pushed.</blockquote><p>To see how <code>--hard</code> compares to its less destructive siblings, <code>--soft</code> and <code>--mixed</code>, here's a quick breakdown.</p><h3 id="comparing-git-reset-flags-hard-vs-soft-vs-mixed">Comparing Git Reset Flags Hard vs Soft vs Mixed</h3><p>This table helps clarify how <code>--hard</code> is different from the other common reset modes, showing what each one affects.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Reset Flag</th>
+<th align="left">Working Directory</th>
+<th align="left">Staging Area (Index)</th>
+<th align="left">Commit History (HEAD)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><code>--soft</code></strong></td>
+<td align="left">Unchanged</td>
+<td align="left">Unchanged</td>
+<td align="left">Moved to specified commit</td>
+</tr>
+<tr>
+<td align="left"><strong><code>--mixed</code></strong></td>
+<td align="left">Unchanged</td>
+<td align="left">Reset to match HEAD</td>
+<td align="left">Moved to specified commit</td>
+</tr>
+<tr>
+<td align="left"><strong><code>--hard</code></strong></td>
+<td align="left"><strong>Reset to match HEAD</strong></td>
+<td align="left"><strong>Reset to match HEAD</strong></td>
+<td align="left">Moved to specified commit</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>As you can see, <code>--hard</code> is the only one that touches your working directory, making it the most impactful—and dangerous—of the three.</p><h3 id="what-really-happens-under-the-hood">What Really Happens Under the Hood</h3><p>When you run this command, Git first needs an up-to-date picture of the remote repository. That's why running <code>git fetch</code> beforehand is almost always a required first step.</p><p>The <code>fetch</code> command updates your local "map" of the remote, ensuring that your <code>origin/branch-name</code> pointer is actually pointing to the latest commit on the server. To really nail down why this matters, check out our guide on the differences between git fetch vs git pull.</p><p>Once your local Git has the latest info, the <code>reset</code> command goes to work. It rewrites your local branch's history to match the remote's exactly. Any commits you made locally but never pushed are simply erased from history. Any files you modified but didn't commit are reverted.</p><p>It’s a clean slate. This is perfect for when your local branch has become a tangled mess, but it demands you use it with caution.</p><h2 id="when-to-use-git-reset-hard-origin">When to Use Git Reset Hard Origin</h2><p>Knowing <em>when</em> to pull out the <code>git reset --hard origin</code> command is just as important as knowing how it works. This isn't your everyday Git command. Think of it as the "break glass in case of emergency" option for your local repository, reserved for those times your branch has gone so far off the rails that a clean slate is the only sensible path forward.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/9523daa0-e5be-4641-8114-4e5fccdffd82.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>It’s the ultimate synchronization tool. When your local work is a mess of failed experiments, or when it's hopelessly out of sync with a force-pushed remote, this command simply cuts through the noise. It throws away your local chaos and makes your branch a perfect mirror of what's on the remote.</p><h3 id="cleaning-up-a-failed-experiment">Cleaning Up a Failed Experiment</h3><p>We've all been there. You're working on a new feature, you've made a dozen experimental commits trying out different ideas, and you finally realize the whole approach is just... wrong. Now your commit history is a disaster, and trying to revert everything one by one would be a nightmare.</p><p>This is the perfect time for a hard reset. Instead of trying to untangle that messy web of commits, you can just wipe the slate clean and start over from the last good state on the remote branch.</p><p>It's your go-to move when:</p><ul><li>You’ve created a bunch of commits that you no longer need.</li><li>The code is completely broken, and you just want to get back to the last working version from <code>origin</code>.</li><li>Your local history has become too twisted to fix with <code>git rebase</code> or a series of <code>git revert</code> commands.</li></ul><blockquote>Running <code>git reset --hard origin/your-branch-name</code> is basically you telling Git, "Forget everything I did locally on this branch. Just give me exactly what the team has." It's a clean, decisive way to get back to a stable baseline.</blockquote><h3 id="recovering-from-a-divergent-branch">Recovering From a Divergent Branch</h3><p>Working on a fast-moving team can lead to some tricky Git situations. A classic one is when a teammate force-pushes a rebased <code>main</code> or <code>develop</code> branch. All of a sudden, your local copy of that branch has a history that's completely different from the remote's. A standard <code>git pull</code> won't work—it'll just create a tangled mess of merge conflicts.</p><p>Trying to merge these two divergent histories is usually a bad idea. The simplest and cleanest solution is to just accept the remote's history as the new source of truth.</p><p>When you run <code>git reset --hard origin/main</code>, you're telling your local repo to forget its own history for that branch and adopt the remote's completely. This fixes the divergence instantly. Just be absolutely sure you don't have any unique local commits you need to save first.</p><p>This is a surprisingly common practice on larger teams. In fact, one study found that around <strong>40% of developers</strong> on teams of five or more use reset commands regularly to discard local changes and realign with the remote. You can dive deeper into these kinds of <a href="https://www.atlassian.com/git/tutorials/undoing-changes/git-reset?ref=articles.mergify.com">Git reset strategies</a> to get a better handle on them.</p><h2 id="how-to-perform-a-safe-reset">How to Perform a Safe Reset</h2><p>Jumping into a <code>git reset --hard origin</code> without a clear plan is like performing surgery with a blindfold. Sure, it gets the job done, but it’s a recipe for disaster if you're not careful. To avoid that sinking feeling of losing valuable work, you need a methodical, safety-first approach. Let's walk through a pre-flight checklist before you even think about typing that reset command.</p><p>Your absolute first priority is to save any local work you might want to keep. Even if your branch feels like a total mess, there might be a few lines of code or a small configuration change buried in there that are worth saving.</p><h3 id="preserve-your-work-with-git-stash">Preserve Your Work with Git Stash</h3><p>This is where <code>git stash</code> becomes your best friend. Think of it as a temporary clipboard for all your uncommitted changes, tucking them away safely while you sort out your branch.</p><p>To save everything you’re currently working on, just run:</p><p><code>git stash save "Backup of my work before hard reset"</code></p><p>This command grabs all your staged and unstaged changes, bundles them up with a message you'll recognize later, and leaves you with a clean working directory. Now, your work is safe, and you can move forward with the reset, knowing you can easily bring those changes back if you need them.</p><blockquote><strong>Pro Tip:</strong> Always run <code>git status</code> <em>before</em> stashing. This gives you a clear picture of exactly what changes will be saved, so there are no surprises down the road.</blockquote><h3 id="the-safe-reset-workflow">The Safe Reset Workflow</h3><p>With your local changes securely stashed away, you're ready to perform the reset itself. The key here is to be deliberate and systematic, making sure you're on the right branch and pulling from the most up-to-date version of the remote.</p><p>This visual flow breaks down the core steps for a safe and effective hard reset.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/af0b90f5-a474-417d-8698-5b432ce55cb2.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>As the diagram shows, a safe reset is really a three-part process: fetch the latest state from the remote, execute the reset on your local branch, and then verify the outcome.</p><p>First things first, you need to update your local Git database with the latest history from the remote repository. If you skip this, you might accidentally reset your branch to an old, outdated version.</p><p>Run this command to sync up:</p><p><code>git fetch origin</code></p><p>This command downloads all the newest commits and branch pointers from the <code>origin</code> remote, but it doesn't actually merge anything into your local branches. It just updates your local "map" of what the remote repository looks like. For a deeper dive into how you can <a href="https://articles.mergify.com/git-overwrite-local-branch-with-remote/">overwrite a local branch with its remote counterpart</a>, this guide offers some great context.</p><p>Next, you absolutely have to double-check which branch you're on. A hard reset on <code>main</code> when you meant to be on <code>feature/new-login-flow</code> is a painful—and entirely avoidable—mistake.</p><p><code>git branch</code></p><p>Make sure the asterisk (<code>*</code>) is right next to the branch you intend to reset.</p><p>Okay, now you're ready for the main event. Run the <code>git reset --hard</code> command, pointing it to the specific remote branch you want to mirror. Let's say you're resetting your local <code>feature/new-login-flow</code> branch to match what's on <code>origin</code>.</p><p><code>git reset --hard origin/feature/new-login-flow</code></p><p>Just like that, your local branch becomes an exact copy of the remote one, completely discarding any local commits that weren't on <code>origin</code>.</p><h3 id="verifying-the-result">Verifying the Result</h3><p>Don't just trust that it worked. Verification is the final, crucial step in this whole process. Right after the reset, run a couple of quick commands to confirm the state of your repository.</p><p>First, check the status of your working directory:</p><p><code>git status</code></p><p>The output should be clean, telling you that your branch is up to date with its remote counterpart and that you have no uncommitted changes.</p><p>Next, inspect the commit history to make sure it looks how you expect:</p><p><code>git log --oneline -n 5</code></p><p>This will show you the last <strong>5</strong> commits on your branch. They should now be identical to the commits at the tip of the remote branch. By following this methodical process, you can turn a potentially dangerous command into a reliable and powerful tool for keeping your codebase clean and synchronized.</p><h2 id="critical-risks-and-how-to-avoid-them">Critical Risks and How to Avoid Them</h2><p>Let's be honest about the dangers here. The <code>git reset --hard origin</code> command is a seriously powerful tool, and with that power comes some very real risk. If you misuse it, you can vaporize hours of work in an instant. This is not a command to use lightly, and understanding the stakes is the first step toward using it safely.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/7a5cf49e-fc24-4e90-8ed8-839c44e54f1f.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>The biggest threat is irreversible data loss. Unlike a softer reset, the <strong><code>--hard</code></strong> flag doesn’t just move a pointer around. It gets its hands dirty and actively changes your files on disk. Any work you haven't committed is gone, with no "Are you sure?" pop-up to save you.</p><h3 id="what-exactly-gets-deleted">What Exactly Gets Deleted</h3><p>When you execute a hard reset to <strong><code>origin</code></strong>, Git is going to discard several types of changes that only exist on your machine. It’s crucial to know exactly what’s on the chopping block before you swing the axe.</p><p>Here’s what you stand to lose in your local environment:</p><ul><li><strong>Modified Tracked Files:</strong> Any edits you've made to files that are already part of the repository will be completely reverted.</li><li><strong>Staged Changes:</strong> Everything sitting in your staging area—all that work you’ve run <strong><code>git add</code></strong> on—will be cleared out.</li><li><strong>New Untracked Files:</strong> This one trips people up. <strong><code>git reset --hard</code></strong> does <strong>not</strong> delete new, untracked files by default. That's a common myth. To do that, you'd need a different command like <strong><code>git clean</code></strong>.</li></ul><p>The most painful loss often comes from local commits—the work you've saved on your machine but haven't pushed yet. A <strong><code>git reset --hard origin</code></strong> will wipe these commits from your branch's history, making it look like they never even happened.</p><blockquote><strong>A Cautionary Tale:</strong> I once lost an entire afternoon of tricky refactoring because I rushed a hard reset. I had several local commits I assumed were safe, but I totally forgot to push them to a backup branch. One command later, they were gone. It was a painful lesson in Git discipline, but one I never forgot.</blockquote><p>And this isn't just a rare "me problem." Many developers have stories of accidental data loss from using <strong><code>git reset --hard</code></strong> improperly. It's a known issue that has led to calls for better education and safer workflows. You can dive deeper into the command's impact by <a href="https://sarathlal.com/understanding-impact-git-reset-hard-command/?ref=articles.mergify.com">reading this analysis on sarathlal.com</a>.</p><h3 id="your-proactive-safety-checklist">Your Proactive Safety Checklist</h3><p>Avoiding disaster really just comes down to building good habits. Before you even think about typing <strong><code>git reset --hard</code></strong>, run through this quick mental checklist. It only takes a few seconds and can save you hours of heartache.</p><ol><li><strong>Always Run <code>git status</code> First:</strong> This is non-negotiable. It’s your immediate snapshot of what’s changed in your working directory and staging area. If you see files you don’t recognize or changes you forgot about, stop and figure it out.</li><li><strong>Stash or Commit Valuable Work:</strong> If <strong><code>git status</code></strong> shows work you might want to keep, either use <strong><code>git stash</code></strong> to tuck it away safely or commit it to a temporary branch (<strong><code>git checkout -b temp-backup-branch</code></strong>).</li><li><strong>Talk to Your Team:</strong> Never, ever hard reset a shared, long-lived branch like <strong><code>main</code></strong> or <strong><code>develop</code></strong> without talking to your team first. Rewriting public history like that is a recipe for chaos and confused (and probably angry) colleagues.</li><li><strong>Fetch Before You Reset:</strong> Make it a habit to run <strong><code>git fetch origin</code></strong> right before you reset. This makes sure you're resetting to the absolute latest version of the remote branch, not some stale copy you pulled down hours ago.</li></ol><h2 id="recovering-from-an-accidental-hard-reset">Recovering From an Accidental Hard Reset</h2><p>That heart-in-your-throat moment after running a <code>git reset --hard</code> too soon is a rite of passage for just about every developer. You hit enter, the command runs, and a cold dread washes over you as you realize you've just wiped out your last few hours of work.</p><p>But don't panic. Before you resign yourself to rewriting everything from memory, take a deep breath. Git has a powerful, built-in safety net for this exact scenario.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/45095cc2-79cc-4dc6-865f-8086fb6d2121.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>It’s time to meet your new best friend: <code>git reflog</code>.</p><p>Think of the reflog as Git's personal diary or a flight recorder for your repository. It keeps a meticulous log of every single move your <code>HEAD</code> pointer makes. This includes trips to commits that are no longer part of any branch history. So even after a hard reset seems to obliterate your work, the reflog still remembers where you've been.</p><h3 id="using-git-reflog-to-find-lost-commits">Using Git Reflog to Find Lost Commits</h3><p>Getting to this history is surprisingly straightforward. Just pop open your terminal and run:</p><p><code>git reflog</code></p><p>What you'll see is a list of recent actions, each with a pointer like <code>HEAD@{1}</code>, a commit <strong>SHA</strong>, and a description of what happened. Your "lost" commits will be right there in the list, probably near the top, with a message like <code>commit: Your very important commit message</code>.</p><blockquote>The <code>reflog</code> is your secret weapon for recovery. It tracks the tips of branches as they change, providing a history of your repository's state transitions, even for commits that have been "lost" through commands like a hard reset.</blockquote><p>Once you spot the commit you want to bring back, grab its <strong>SHA</strong> identifier—that alphanumeric string like <code>a1b2c3d</code>. This little string is the key to resurrecting your code. You now have a direct pointer to the exact state you thought you had lost forever.</p><p>If you want to dig deeper into this, there's a great guide on <a href="https://articles.mergify.com/using-git-reflog-to-find-a-lost-commit-2/">using git reflog to find a lost commit</a>.</p><h3 id="restoring-your-work">Restoring Your Work</h3><p>With that precious commit <strong>SHA</strong> copied to your clipboard, you have a couple of ways to get your code back. The right choice depends on whether you want to rescue a single change or rewind the entire branch.</p><ul><li><strong>To restore the entire branch:</strong> If you want to completely undo the reset, you can just run another reset, but this time pointing to the lost commit's <strong>SHA</strong>.<br><code>git reset --hard a1b2c3d</code><br>This command snaps your branch pointer right back to where it was before the accident, bringing everything back with it.</li><li><strong>To recover a single commit:</strong> Maybe you only need to pull out one specific commit without undoing the whole reset. In that case, <code>git cherry-pick</code> is the perfect tool for the job.<br><code>git cherry-pick a1b2c3d</code><br>This command plucks that specific commit out of the reflog and applies it right on top of your current branch, neatly integrating your lost changes back into the project.</li></ul><p>Turning a moment of sheer panic into a powerful lesson is what this is all about. The <code>git reset --hard origin</code> command is undeniably destructive, but thanks to Git's robust internal tooling, as long as you committed your work, it's almost never truly gone.</p><h2 id="common-questions-about-git-reset">Common Questions About Git Reset</h2><p>When you start messing with a command like <code>git reset --hard origin</code>, it's natural for a few questions to pop up. It's a powerful tool, and the line between "this fixed everything" and "I just deleted my work" can feel terrifyingly thin. Let's clear up some of the most common points of confusion so you can use it with confidence.</p><h3 id="resetting-to-origin-vs-head">Resetting to Origin vs. HEAD</h3><p>One of the first things people get tripped up on is the difference between resetting to the remote versus your last local commit. Getting this right is crucial to avoiding those gut-wrenching "oh no" moments.</p><ul><li><code><strong>git reset --hard origin/main</strong></code>: Think of this as the "make my local branch look <em>exactly</em> like the remote" command. It takes your local <code>main</code> branch and forces it to match the <code>main</code> branch on the server (<code>origin</code>). This means any local commits or changes that you haven't pushed are gone. Poof. It's your way of saying, "I trust the remote more than my local copy."</li><li><code><strong>git reset --hard HEAD</strong></code>: This one is much more contained. It only discards changes in your working directory and staging area, resetting your files back to your <em>last local commit</em> (<code>HEAD</code>). Your commit history stays untouched, and it doesn't interact with the remote repository at all. It’s a purely local cleanup.</li></ul><h3 id="will-this-command-affect-the-remote-repository">Will This Command Affect the Remote Repository?</h3><p>There's a common fear that you might accidentally rewrite the project's history for everyone else on your team. Good news: you can put that worry aside.</p><p>The <code>git reset --hard origin</code> command is a <strong>strictly local operation</strong>. It only changes <em>your</em> copy of the repository to match what's on the remote server. It doesn't send anything back to the remote or mess with the shared history in any way.</p><blockquote>To actually change the remote history, you'd have to follow up with a much more dangerous command: <code>git push --force</code>. That action overwrites the remote branch and is something you should only do with extreme caution and after talking to your team.</blockquote><h3 id="is-it-safe-to-use-on-a-shared-branch">Is It Safe to Use on a Shared Branch?</h3><p>Running this command on a shared branch like <code>main</code> or <code>develop</code> requires a bit of extra thought. If you have legitimate commits on your local <code>main</code> that you haven't pushed yet, a hard reset will wipe them out for good. This is why the command is usually best for cleaning up your own mess on a feature branch.</p><p>For the everyday task of just getting the latest code from the server onto a shared branch, <code>git pull</code> is the standard and much safer choice. It integrates remote changes without nuking your local work.</p><hr><p>At <strong>Mergify</strong>, we build tools that make complex Git workflows simple and safe. Our automated merge queue prevents broken builds and keeps your team moving forward, eliminating the chaos that often leads to needing a hard reset in the first place.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>

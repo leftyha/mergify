@@ -1,0 +1,574 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>Mastering Git Merge Commits for Modern Developers</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Learn how to handle git merge commits with confidence. Our guide covers resolving conflicts, best practices, and advanced strategies for a clean Git history.">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/git-merge-commits/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Mastering Git Merge Commits for Modern Developers">
+    <meta property="og:description" content="Learn how to handle git merge commits with confidence. Our guide covers resolving conflicts, best practices, and advanced strategies for a clean Git history.">
+    <meta property="og:url" content="https://articles.mergify.com/git-merge-commits/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg">
+    <meta property="article:published_time" content="2025-09-25T09:06:05.000Z">
+    <meta property="article:modified_time" content="2025-09-25T09:06:09.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mastering Git Merge Commits for Modern Developers">
+    <meta name="twitter:description" content="Learn how to handle git merge commits with confidence. Our guide covers resolving conflicts, best practices, and advanced strategies for a clean Git history.">
+    <meta name="twitter:url" content="https://articles.mergify.com/git-merge-commits/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "Mastering Git Merge Commits for Modern Developers",
+    "url": "https://articles.mergify.com/git-merge-commits/",
+    "datePublished": "2025-09-25T09:06:05.000Z",
+    "dateModified": "2025-09-25T09:06:09.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "A git merge commit isn&#x27;t just another entry in your project&#x27;s log. It&#x27;s a special type of commit that brings two different development histories together, creating a single, unified timeline. Think of it less like a regular commit that saves new changes and more like a permanent record of integration—a signpost showing exactly when a feature branch was folded back into the main line of development.\n\n\nWhy Git Merge Commits Are So Important\n\n\n\n\n\nBefore we jump into the commands, it’s really import",
+    "mainEntityOfPage": "https://articles.mergify.com/git-merge-commits/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="ad15bc88-3475-4cb3-b94e-429c83ff773d" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"><div class="gh-announcement-bar dark"><div class="gh-announcement-bar-content"><p dir="ltr"><span>🚀 </span><b><strong>Now GA:</strong></b><span> </span><a href="https://mergify.com/products/ci-insights" rel="noreferrer"><span>CI Insights</span></a><span> helps you spot flaky jobs, cut CI costs, and ship faster. </span><a href="https://dashboard.mergify.com" rel="noreferrer"><span>Try it free</span></a><span>.</span></p></div><button aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16" width="16"><path stroke-linecap="round" stroke-width="0.4" fill="currentColor" stroke="#000000" stroke-linejoin="round" d="M.44,21.44a1.49,1.49,0,0,0,0,2.12,1.5,1.5,0,0,0,2.12,0l9.26-9.26a.25.25,0,0,1,.36,0l9.26,9.26a1.5,1.5,0,0,0,2.12,0,1.49,1.49,0,0,0,0-2.12L14.3,12.18a.25.25,0,0,1,0-.36l9.26-9.26A1.5,1.5,0,0,0,21.44.44L12.18,9.7a.25.25,0,0,1-.36,0L2.56.44A1.5,1.5,0,0,0,.44,2.56L9.7,11.82a.25.25,0,0,1,0,.36Z"></path></svg></button></div></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">Mastering Git Merge Commits for Modern Developers</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-09-25">25 Sep 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 16 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1b36dce1-8c51-4bf6-b6e4-31cc701595e6.jpg" alt="Mastering Git Merge Commits for Modern Developers">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>A <strong>git merge commit</strong> isn't just another entry in your project's log. It's a special type of commit that brings two different development histories together, creating a single, unified timeline. Think of it less like a regular commit that saves new changes and more like a permanent record of integration—a signpost showing exactly when a feature branch was folded back into the main line of development.</p><h2 id="why-git-merge-commits-are-so-important">Why Git Merge Commits Are So Important</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/328c589d-1f6e-4f71-97bf-6692f71b31e5.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Before we jump into the commands, it’s really important to get why merge commits are a big deal in any collaborative coding environment. They are the bedrock of a traceable, transparent project history. Each merge commit explicitly marks the point where different streams of work converge, which is fundamental to how Git was designed to work from day one.</p><p>When Git was created back in <strong>2005</strong>, it needed a robust way to handle divergent branches without losing any context. The solution was the merge commit, which is unique because it has two or more parent commits. This structure perfectly preserves the full, independent history of the work that was done. It's no surprise that in many large open-source projects, <strong>merge commits can make up 10-20% of the total commit history</strong>, a testament to their role in team workflows.</p><h3 id="preserving-project-context">Preserving Project Context</h3><p>One of the biggest wins of using explicit merge commits is that you preserve the <em>context</em> of your work. When you merge a feature branch, Git sometimes defaults to a "fast-forward" merge. This just moves the main branch pointer forward to the tip of the feature branch, leaving you with a clean, linear history.</p><p>While a linear history might look tidy, it erases the crucial fact that those commits were developed on a separate branch. Using a true merge commit (by adding the <code>--no-ff</code> flag) makes sure your history reflects reality: a feature was built in isolation and <em>then</em> integrated.</p><p>This context is gold for a few reasons:</p><ul><li><strong>Debugging:</strong> You can instantly see which feature branch introduced a bug.</li><li><strong>Code Archeology:</strong> It helps you understand the complete story behind a set of changes, not just the final result.</li><li><strong>Reverting Features:</strong> You can back out an entire feature cleanly by reverting a single merge commit.</li></ul><h3 id="merge-commits-vs-rebasing">Merge Commits vs. Rebasing</h3><p>The main alternative to merging is <strong>rebasing</strong>. Rebasing essentially rewrites history by taking the commits from one branch and replaying them on top of another. The result is that same clean, linear log, but it comes at the cost of historical accuracy.</p><blockquote>The choice between merging and rebasing is a core decision for any development team. Merging preserves history exactly as it happened. Rebasing creates a tidier, but ultimately altered, history.</blockquote><p>To help you decide what's best for your team's workflow, here's a quick breakdown of the main integration strategies.</p><h3 id="merge-strategy-quick-comparison">Merge Strategy Quick Comparison</h3><p>There's no single right answer, and many teams end up using a hybrid approach depending on the situation. Understanding the fundamental differences is the first step toward making an informed decision for your project.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Strategy</th>
+<th align="left">Commit History Result</th>
+<th align="left">Primary Use Case</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Merge (<code>--no-ff</code>)</strong></td>
+<td align="left">A non-linear history with a dedicated merge commit.</td>
+<td align="left">Preserving the exact history of feature branches, ideal for team collaboration and long-lived branches.</td>
+</tr>
+<tr>
+<td align="left"><strong>Rebase</strong></td>
+<td align="left">A clean, linear history with no merge commit.</td>
+<td align="left">Cleaning up a feature branch before merging to keep the main branch history simple. Best for local, un-pushed changes.</td>
+</tr>
+<tr>
+<td align="left"><strong>Squash and Merge</strong></td>
+<td align="left">A single new commit on the target branch.</td>
+<td align="left">Condensing all of a feature branch's commits into one, perfect for small features or to hide messy intermediate work.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>Ultimately, whether you lean towards merging or rebasing depends on what your team values more: a pristine, easy-to-read history or a completely accurate, albeit more complex, one. If you're still weighing the options, you might be interested in a deeper comparison of <a href="https://articles.mergify.com/rebase-git-vs-merge/">Git rebase vs merge</a> to see which fits your needs.</p><h2 id="putting-git-merges-into-practice">Putting Git Merges Into Practice</h2><p>Alright, let's move from theory to action and get our hands dirty with different types of <strong>git merge commits</strong>. The real key to a clean, readable project history is knowing exactly how each command shapes your Git log. We’ll start with the most basic scenario and work our way up.</p><p>Deciding between a merge or a rebase can sometimes feel like a complex choice. This flow chart does a great job of visualizing when each approach makes the most sense.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/428e6f57-9906-4dbc-96e9-04f72b99312c.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>As you can see, the main decision point often boils down to a simple question: do you want a perfectly clean, linear history (go with rebase), or do you need to preserve the exact context of how a branch was developed (stick with a merge)?</p><h3 id="the-simple-fast-forward-merge">The Simple Fast-Forward Merge</h3><p>The most straightforward way Git integrates changes is with a <strong>fast-forward merge</strong>. This can only happen when the branch you're merging into (like <code>main</code>) hasn't had any new commits since you created your feature branch. In this scenario, Git just scoots the <code>main</code> branch pointer forward to match the tip of your feature branch. It’s that simple.</p><p>Let's say you just whipped up a quick hotfix, and the <code>main</code> branch is untouched since you started.</p><h1 id="first-switch-back-to-the-main-branch">First, switch back to the main branch</h1><p>git checkout main</p><h1 id="now-merge-your-hotfix-branch-in">Now, merge your hotfix branch in</h1><p>git merge hotfix-branch</p><p>The terminal output will tell you it was a "fast-forward," and your history will look like a single, straight line. It's tidy, for sure, but it also completely erases the record that <code>hotfix-branch</code> ever existed as a separate line of work.</p><h3 id="forcing-a-real-merge-withno-ff">Forcing a "Real" Merge with --no-ff</h3><p>So, what if you <em>want</em> to preserve the context of your branch? You can force Git to create an actual merge commit, even when a fast-forward is possible. This is exactly what the <code>--no-ff</code> (no fast-forward) flag is for, and it's a standard practice for many teams who value a complete, transparent history.</p><blockquote>I'm a big fan of using <code>--no-ff</code> because it ensures every feature integration is documented with its own merge commit. This makes it incredibly easy to see which commits belong to a specific feature or to revert an entire feature with a single command down the line.</blockquote><p>Let's run through that same hotfix scenario, but this time, we'll make sure a merge commit gets created.</p><p>git checkout main<br>git merge --no-ff hotfix-branch</p><p>Running this command will pop open your default text editor, prompting you to write a message for the merge commit. When you check your Git log afterward, you'll see a brand new commit with two parents, clearly marking where <code>hotfix-branch</code> was integrated. If you want a more detailed walkthrough, this resource has some great <a href="https://articles.mergify.com/git-merge-branch-into-another/">step-by-step instructions</a> on the topic.</p><h3 id="cleaning-up-history-with-squash-merges">Cleaning Up History with Squash Merges</h3><p>Okay, but what about those branches with a dozen tiny, messy commits like "fix typo" or "oops, forgot a file"? You definitely don't want all that noise cluttering up your <code>main</code> branch's history. The <code>--squash</code> option is the perfect tool for this exact situation.</p><p>A squash merge grabs all the changes from your feature branch, bundles them into a single set of changes, and applies them as one <em>brand new commit</em> on the target branch. It doesn't create a traditional merge commit with two parents; instead, it just condenses all that work into one clean, concise entry.</p><p>git checkout main<br>git merge --squash feature-with-messy-commits<br>git commit -m "feat: Implement new user authentication flow"</p><p>Notice this is a two-step process. The <code>merge --squash</code> command only stages the changes. You still have to run <code>git commit</code> yourself to finalize everything. This is actually a feature, not a bug—it gives you full control over the final commit message, letting you write a perfect summary of what the entire feature accomplished.</p><h2 id="resolving-merge-conflicts-without-fear">Resolving Merge Conflicts Without Fear</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/1e3c337e-c77d-485f-87b1-b22240b73bfd.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Let's be honest, nobody enjoys seeing that "CONFLICT" message pop up in their terminal. It can feel like Git is scolding you for doing something wrong, but that couldn't be further from the truth.</p><p>Merge conflicts are a completely normal—and expected—part of working on a team where multiple people are touching the same files. It's not a bug; it's a feature.</p><p>A conflict is just Git's way of saying it tried to automatically combine changes but couldn't make an executive decision. Imagine you and a colleague both edited the exact same line in a config file. Git wisely pauses and asks you, the human, to make the final call. This is a safety mechanism, not a failure on your part.</p><p>Handling the occasional conflict is a universal skill. In fact, survey data from over 5,000 software teams shows that about <strong>85% of teams</strong> rely on merge commits as a primary way to integrate their work. You can dig into more of these git statistics and <a href="https://github.com/git-quick-stats/git-quick-stats?ref=articles.mergify.com">team workflows from the full research</a> if you're curious.</p><h3 id="identifying-and-interpreting-the-conflict">Identifying and Interpreting the Conflict</h3><p>So, you've hit a conflict. What's next? Your first move is always to see which files are causing the issue. Running <code>git status</code> is your best friend here. It will clearly list everything under an "Unmerged paths" heading, leaving no room for guesswork.</p><p>Once you open one of those files, you’ll see the conflict markers Git has helpfully inserted right into your code. They look a little strange at first, but they give you everything you need.</p><ul><li><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>: This is the start of the changes from <em>your</em> current branch.</li><li><code>=======</code>: This simple line separates the two conflicting versions.</li><li><code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; &lt;branch-name&gt;</code>: This marks the end of the changes from the branch you're trying to merge in.</li></ul><p>Your job is to play editor. You need to delete all the Git markers (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>) and leave only the code you actually want to keep. Sometimes you'll pick one version, sometimes the other, and sometimes you'll craft a brand-new solution that combines the best of both.</p><h3 id="finalizing-the-resolution">Finalizing the Resolution</h3><p>After you’ve edited the file and saved your changes, you have to tell Git that you're done. This is a crucial step that’s easy to forget in the moment. You do this by staging the very file you just fixed.</p><h1 id="after-editing-the-conflicted-file-to-your-satisfaction">After editing the conflicted file to your satisfaction...</h1><p>git add path/to/your/resolved_file.js</p><p>Staging the file signals to Git that the conflict is handled. Once you've staged all the files that were in a conflicted state, you can finally complete the merge.</p><h1 id="this-creates-the-final-merge-commit">This creates the final merge commit</h1><p>git commit<br>Git will usually pop up a pre-written commit message for you, something like "Merge branch 'feature-branch' into main." Most of the time, you can just save and exit to finalize the whole process.</p><p>If you're still feeling a bit shaky, our guide on how to <a href="https://articles.mergify.com/resolve-git-merge-conflicts/">resolve Git merge conflicts effectively</a> offers more advanced tips to get you through it.</p><blockquote><strong>Remember:</strong> A merge conflict isn't an error. It's just Git pausing the process and asking for your expert opinion. Think of it as a routine part of collaborative work, not a roadblock.</blockquote><h3 id="using-graphical-merge-tools">Using Graphical Merge Tools</h3><p>For gnarlier conflicts that span many lines, trying to manually edit those markers can get tedious and error-prone. This is exactly where graphical merge tools save the day.</p><p>Tools like <a href="https://code.visualstudio.com/?ref=articles.mergify.com">VS Code's</a> built-in merge editor, Meld, or P4Merge give you a side-by-side (or three-way) view that makes it infinitely easier to see the differences and just click to choose which changes to keep.</p><p>You can configure Git to fire up your favorite tool by running <code>git mergetool</code>. It will open each conflicted file one by one, letting you visually resolve everything with a few clicks. It turns a potentially frustrating task into a much more manageable one.</p><p>Look, anyone can run <code>git merge</code>. That's the easy part. The real skill—the thing that separates the pros from the rest—is crafting a clean, understandable project history. This isn't just about making your <code>git log</code> look pretty. It's about building a codebase that’s easier to debug, understand, and build on for years to come.</p><p>It all starts with your branches. Honestly, the most impactful habit you can adopt is keeping your feature branches small and short-lived. A branch that drags on for weeks and touches a dozen different files is just asking for a painful, conflict-ridden merge.</p><p>Break down big features into smaller tasks. Aim for branches that can be completed and merged within a day or two. This one change will dramatically shrink the odds of running into a monster merge conflict.</p><h3 id="write-descriptive-merge-commit-messages">Write Descriptive Merge Commit Messages</h3><p>When you merge, Git will politely suggest a default message like "Merge branch 'feature-xyz'". While technically true, it's completely useless for your future self or your teammates. A great merge commit message tells the story <em>behind</em> the code. It should answer the "why."</p><p>So, what makes a good message?</p><ul><li><strong>Summarize the goal:</strong> What was the point of this branch in the first place?</li><li><strong>Link to context:</strong> Always include ticket numbers (like JIRA-123) or links to the pull request.</li><li><strong>Mention key decisions:</strong> Did you choose a specific library for a reason? Did you squash a particularly tricky bug?</li></ul><p>A well-written message turns your Git log from a messy pile of commits into high-level documentation of your project's entire life. It’s a gift to the next developer who has to figure out what you were thinking.</p><h3 id="use-pull-requests-for-formal-review">Use Pull Requests for Formal Review</h3><p>Modern development platforms like <a href="https://github.com/?ref=articles.mergify.com">GitHub</a> and <a href="https://gitlab.com/?ref=articles.mergify.com">GitLab</a> have basically perfected the merge workflow with their pull request (or merge request) features. A pull request wraps the whole merge process in a dedicated space for code review, discussion, and automated checks <em>before</em> anything hits your main branch.</p><p>This simple workflow is your best defense against bad code. It guarantees that multiple sets of eyes have seen the changes, catching bugs and upholding quality standards before they become a real problem.</p><blockquote>Pull requests are a non-negotiable part of modern development. They act as a critical quality gate, ensuring that every git merge commit has been vetted, tested, and approved by the team.</blockquote><h3 id="choose-the-right-merge-strategy">Choose the Right Merge Strategy</h3><p>As we’ve seen, <em>how</em> you merge really matters. The strategy you pick directly shapes your project's history, so making an intentional choice is key to keeping things clear and traceable.</p><p>The numbers back this up. Data from major repository hosts shows that <strong>git merge commits</strong> often make up between <strong>12% and 25%</strong> of a project's total commits. Teams that really embrace feature branching and systematic merging can see productivity jump by up to <strong>40%</strong>. You can dig into some of these insights in <a href="https://www.atlassian.com/git/tutorials/using-branches/git-merge?ref=articles.mergify.com">Atlassian's analysis of Git branching</a>.</p><p>So, which tool do you pull out of the toolbox? It depends on what you're trying to achieve.</p><h3 id="choosing-your-merge-strategy">Choosing Your Merge Strategy</h3><p>Deciding between <code>--no-ff</code>, <code>--squash</code>, or a rebase-then-merge approach depends entirely on your team's philosophy on what a "clean" history looks like. Do you value the raw, detailed history of a feature's development, or do you prefer a streamlined, linear story? Here’s a quick breakdown to help you decide.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Merge Flag</th>
+<th align="left">History Impact</th>
+<th align="left">Best For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><code>--no-ff</code></strong></td>
+<td align="left">Creates a new merge commit, preserving the branch's entire history as a distinct unit.</td>
+<td align="left">Feature branches. It clearly shows where a set of changes came from and makes it easy to revert an entire feature if needed. This is the safest default.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>--squash</code></strong></td>
+<td align="left">Condenses all commits from a branch into a single new commit on the target branch. The original branch history is discarded.</td>
+<td align="left">Messy branches with lots of "WIP" or "fixup" commits. It keeps the main history clean and linear, focusing on the final result, not the process.</td>
+</tr>
+<tr>
+<td align="left"><strong>Rebase + Merge</strong></td>
+<td align="left">Replays branch commits on top of the target branch for a linear history, then creates a merge commit.</td>
+<td align="left">Teams that want a clean, linear history but still value the context of a merge commit for grouping related changes. A great hybrid approach.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>Ultimately, the best strategy is the one your team agrees on and uses consistently. Having a shared understanding is more important than picking the "perfect" option.</p><p>A quick cheat sheet based on my experience:</p><ul><li><strong>Use <code>--no-ff</code> (No Fast-Forward):</strong> Make this your go-to for most feature branches. It creates that explicit merge commit, preserving the branch's story and making it obvious where a group of changes came from.</li><li><strong>Use <code>--squash</code>:</strong> This is perfect for those branches with a dozen tiny, messy "WIP" commits. It rolls the whole thing up into one clean commit on your main branch, keeping the primary history tidy and readable.</li><li><strong>Use Rebase then Merge:</strong> This is for teams who love a linear history but still want the safety net of a merge commit. You just rebase your feature branch onto <code>main</code> to clean it up, and then perform a standard <code>--no-ff</code> merge. Best of both worlds.</li></ul><p>It’s a scenario that makes every developer’s heart sink. You merge what looks like a perfectly fine feature branch, push it to <code>main</code>, and suddenly, production is on fire. Your first instinct might be to panic, but Git gives us a clean, safe way to handle this without making things worse.</p><p>When a bad merge has already been pushed and is now part of your shared history, you absolutely <em>do not</em> want to use <code>git reset</code>. Rewriting the history of a shared branch is a recipe for disaster. Instead, your go-to command is <code>git revert</code>.</p><p>Unlike <code>reset</code>, which essentially rips commits out of the timeline, <code>revert</code> creates a brand <em>new</em> commit that is the exact inverse of the problematic one. This keeps the project history clean, logical, and safe for everyone on the team.</p><h3 id="undoing-merges-with-git-revertm">Undoing Merges with <code>git revert -m</code></h3><p>Here's the catch: reverting a merge commit is a little different from reverting a regular, single-parent commit. A merge commit, by its nature, has at least two parents: one from the branch you merged <em>into</em> (like <code>main</code>) and one from the branch that was merged <em>in</em> (your feature branch).</p><p>Because of this, you have to explicitly tell Git which parent's history you want to keep as the "mainline." That’s where the <code>-m</code> flag comes in.</p><ul><li><code>git revert &lt;merge-commit-hash&gt; -m 1</code>: This tells Git to undo the changes introduced by the <em>second</em> parent (the feature branch) and stick with the history of the first parent (the <code>main</code> branch).</li><li><code>git revert &lt;merge-commit-hash&gt; -m 2</code>: This would do the opposite, which is almost never what you want. It would keep the feature branch changes and discard what was on <code>main</code>.</li></ul><blockquote>In <strong>99%</strong> of emergency "back-it-out" situations, you're going to use <code>-m 1</code>. Think of it as telling Git, "Pretend this merge from the feature branch never happened, and take me back to how <code>main</code> looked right before."</blockquote><h3 id="a-real-world-emergency-scenario">A Real-World Emergency Scenario</h3><p>Let's walk through a classic fire drill. You've just merged the <code>feature/new-checkout</code> branch into <code>main</code>, and within minutes, the support channel is blowing up with bug reports. You need to act fast.</p><p>First, you need the hash of that bad merge commit. A quick <code>git log --oneline</code> will show you what you need at the top of the history.</p><p>a1b2c3d (HEAD -&gt; main) Merge branch 'feature/new-checkout'<br>f4e5d6c (feature/new-checkout) Add payment gateway<br>...<br>e7f8g9h Previous commit on main</p><p>That top commit, <code>a1b2c3d</code>, is our culprit.</p><p>Now, you can run the revert command, specifying that <code>main</code> is the parent branch you want to preserve (parent <strong>1</strong>).</p><p>git revert a1b2c3d -m 1</p><p>Git will pop open your default text editor with a pre-populated commit message, usually something like "Revert 'Merge branch 'feature/new-checkout''". You can just save and close it.</p><p>With that, Git creates a new commit that perfectly cancels out every change introduced by the <code>feature/new-checkout</code> branch. All you have to do is push this new revert commit, and production will be restored to its previous state. The emergency is over.</p><h2 id="still-have-questions-about-git-merges">Still Have Questions About Git Merges?</h2><p>Even when you feel like you've got a handle on the basics, Git has a way of throwing curveballs. Certain scenarios can leave even seasoned developers scratching their heads. This section is designed to be a quick-fire reference, giving you clear, straightforward answers to the questions that pop up most often when you're in the trenches with <code>git merge</code>.</p><p>Think of it as your personal FAQ for untangling those tricky, "what-if" moments without digging through pages of documentation.</p><h3 id="merge-vs-rebase-whats-the-real-difference">Merge vs. Rebase: What's the Real Difference?</h3><p>This is, without a doubt, the most common point of confusion.</p><p>A <strong><code>git merge</code></strong> is a non-destructive move. It elegantly ties two branch histories together by creating a special new commit—a "merge commit"—that has two parents. This is powerful because it preserves the original, independent context of both branches forever. You can always look back and see exactly where a feature branch diverged and where it was brought back into the main line.</p><p>On the other hand, <strong><code>git rebase</code></strong> is a destructive operation because it <em>rewrites</em> history. It takes the commits from your feature branch and replays them, one by one, right on top of the target branch. The result is a beautifully clean, linear history, but it comes at a cost: the original context of your branch is gone.</p><blockquote>The core takeaway is simple: merge preserves history exactly as it happened, while rebase creates a tidier but altered version of that history. For any shared branches that other developers are using, merging is <em>always</em> the safer bet.</blockquote><h3 id="can-you-merge-just-one-commit">Can You Merge Just One Commit?</h3><p>Yes, you absolutely can, but <code>git merge</code> isn't the tool for the job. For this specific task, you'll want to reach for <code>git cherry-pick &lt;commit-hash&gt;</code>. This command is like a surgical tool that lets you pluck a single commit from any branch and apply it as a brand-new commit on your current branch.</p><p>It’s incredibly handy in a few common situations:</p><ul><li><strong>Backporting a hotfix:</strong> You need to apply a critical bug fix from your main development branch to an older, stable release branch without bringing over any new features.</li><li><strong>Grabbing a utility function:</strong> A teammate has written a small, useful function on their in-progress branch, and you want to use it now without pulling in all their other unfinished work.</li></ul><h3 id="how-to-see-already-merged-branches">How to See Already Merged Branches</h3><p>Ready for some housekeeping? To see which of your local branches are fully integrated into your current branch (like <code>main</code>), the command is <code>git branch --merged</code>. This is a fantastic cleanup utility, as it gives you a list of branches that are completely safe to delete because all their work is already included.</p><p>The opposite is just as useful. Running <code>git branch --no-merged</code> shows you which branches contain work that <em>hasn't</em> been merged yet. This is perfect for spotting forgotten feature branches or just getting a quick overview of what's still in progress.</p><h3 id="why-did-my-merge-have-so-many-conflicts">Why Did My Merge Have So Many Conflicts?</h3><p>If you've ever run a merge and been met with a wall of conflicts, you're not alone. Massive, tangled conflicts are almost always a symptom of the same root problem: a long-running feature branch that has drifted too far from the main line of development.</p><p>The longer a branch exists in isolation without getting updates from <code>main</code>, the more the two histories diverge. When it's finally time to merge, Git is often completely lost, making a painful, manual merge almost inevitable.</p><p>To avoid this headache, get into the habit of frequently merging or rebasing the main branch <em>into</em> your feature branch. Seriously. Resolving a few small, manageable conflicts every day is far less stressful than tackling a giant, multi-file conflict right before a deadline.</p><hr><p>At <strong>Mergify</strong>, we're obsessed with making code integration smoother and more efficient. Our platform automates pull request updates and intelligently batches CI checks to stop conflicts before they start, keeping your codebase stable. This frees up your team to do what they do best: build great software. Discover a better way to merge at <a href="https://mergify.com/?ref=articles.mergify.com">https://mergify.com</a>.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>

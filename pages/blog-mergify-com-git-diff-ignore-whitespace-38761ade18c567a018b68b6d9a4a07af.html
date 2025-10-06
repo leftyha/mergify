@@ -1,0 +1,552 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>Clean Diffs Git Diff Ignore Whitespace Guide</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Tired of noisy diffs? Learn how to use git diff ignore whitespace to focus on real code changes, streamline code reviews, and improve your workflow.">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/git-diff-ignore-whitespace/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Clean Diffs Git Diff Ignore Whitespace Guide">
+    <meta property="og:description" content="Tired of noisy diffs? Learn how to use git diff ignore whitespace to focus on real code changes, streamline code reviews, and improve your workflow.">
+    <meta property="og:url" content="https://articles.mergify.com/git-diff-ignore-whitespace/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg">
+    <meta property="article:published_time" content="2025-09-24T08:47:22.000Z">
+    <meta property="article:modified_time" content="2025-09-24T08:47:25.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Clean Diffs Git Diff Ignore Whitespace Guide">
+    <meta name="twitter:description" content="Tired of noisy diffs? Learn how to use git diff ignore whitespace to focus on real code changes, streamline code reviews, and improve your workflow.">
+    <meta name="twitter:url" content="https://articles.mergify.com/git-diff-ignore-whitespace/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "Clean Diffs Git Diff Ignore Whitespace Guide",
+    "url": "https://articles.mergify.com/git-diff-ignore-whitespace/",
+    "datePublished": "2025-09-24T08:47:22.000Z",
+    "dateModified": "2025-09-24T08:47:25.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "We&#x27;ve all been there. You open a pull request expecting a few meaningful changes, only to be greeted by hundreds of lines of red and green. But as you scroll, you realize it&#x27;s all just… whitespace. Tabs converted to spaces, a line ending tweaked here and there.\n\nThis kind of &quot;whitespace noise&quot; is more than just a minor annoyance. It buries the actual logic changes, making code reviews a frustrating chore and increasing the odds that a real bug slips through unnoticed.\n\n\nWhy Your Diffs Are So Noi",
+    "mainEntityOfPage": "https://articles.mergify.com/git-diff-ignore-whitespace/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="716165bc-2b3d-480c-a78d-2a33a614c6f8" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">Clean Diffs Git Diff Ignore Whitespace Guide</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-09-24">24 Sep 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 11 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-65845335-aa78-4c36-983d-9c153b4f9b6a.jpg" alt="Clean Diffs Git Diff Ignore Whitespace Guide">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>We've all been there. You open a pull request expecting a few meaningful changes, only to be greeted by hundreds of lines of red and green. But as you scroll, you realize it's all just… whitespace. Tabs converted to spaces, a line ending tweaked here and there.</p><p>This kind of "whitespace noise" is more than just a minor annoyance. It buries the <em>actual</em> logic changes, making code reviews a frustrating chore and increasing the odds that a real bug slips through unnoticed.</p><h2 id="why-your-diffs-are-so-noisy">Why Your Diffs Are So Noisy</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/f4c28c4f-bf9d-43a8-a55e-660c7292ca78.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Most of the time, noisy diffs boil down to a lack of consistent coding standards across a team. When every developer’s editor has its own ideas about formatting, chaos is pretty much guaranteed. One person's IDE is set to use tabs, while another's is configured for spaces. A simple save operation can trigger a format-on-save, and suddenly, the whole file has changed.</p><p>The result is a commit history filled with trivial updates that add zero functional value. These formatting-only commits make it incredibly difficult to see the real substance of the work, turning what should be a quick review into a tedious scavenger hunt.</p><h3 id="the-common-culprits-behind-noisy-diffs">The Common Culprits Behind Noisy Diffs</h3><p>This problem is rarely caused by just one thing; it's usually a combination of factors. A developer might save a file, and their auto-formatter converts all tabs to spaces, instantly marking every single line as modified.</p><p>Here are a few of the usual suspects I see all the time:</p><ul><li><strong>Mixed Tabs and Spaces:</strong> The classic formatting war. Different editors handle indentation differently, and the diff pays the price.</li><li><strong>Varying Line Endings:</strong> A developer on Windows (CRLF) can inadvertently change every single line of a file just by opening and saving it, especially if the rest of the team is on macOS or Linux (LF).</li><li><strong>Aggressive Auto-Formatters:</strong> Tools like <a href="https://prettier.io/?ref=articles.mergify.com">Prettier</a> are fantastic for consistency, but if they aren't configured and run by everyone, they can reformat entire files and create those massive, distracting diffs.</li><li><strong>Trailing Whitespace:</strong> Some editors helpfully trim whitespace from the ends of lines, while others don't. This leads to tons of tiny, but widespread, changes.</li></ul><blockquote>The real danger here isn't just the frustration. It’s the very real risk of overlooking a critical bug hidden within hundreds of lines of trivial formatting adjustments. A clean diff helps the reviewer focus on what actually matters.</blockquote><p>Ultimately, this noise doesn't just waste time during code reviews; it pollutes your project’s history. When you <code>git blame</code> a line a year from now, you want to see the "why" behind a change, not just that someone re-indented the block. That’s exactly why learning to properly handle whitespace in your diffs is a fundamental skill for any developer.</p><p>When you're staring down a pull request and it looks like a hundred lines have changed, it’s easy to feel overwhelmed. But how much of that is just… noise? Often, it's just a linter going wild and reformatting an entire file. Your job is to find the one-line logical change buried in all that whitespace chaos.</p><p>This is where the command line becomes your best friend. Instead of manually scanning for the <em>real</em> changes, you can use a few simple flags to tell Git exactly what to ignore.</p><p>The quickest way to cut through the clutter is with the <strong><code>-w</code></strong> flag. It's the sledgehammer of whitespace management.</p><p>Running <code>git diff -w</code> tells Git to completely disregard all whitespace differences. It's perfect for those situations where indentation, tabs, spaces, and line breaks are functionally irrelevant, but they’re making the diff impossible to read. It cleans things up so you can focus on what actually matters.</p><p>This visual breaks down how you can move from a surgical approach to a broader one when dealing with whitespace.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/246254ab-46d3-4a0f-b30d-8ae71148e2e1.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>It's all about picking the right tool for the job, starting small and expanding your scope as needed to get a clean, readable diff.</p><h3 id="getting-more-specific-with-your-diffs">Getting More Specific with Your Diffs</h3><p>While <strong><code>-w</code></strong> (or its longer, more descriptive alias, <strong><code>--ignore-all-space</code></strong>) is a fantastic catch-all, sometimes you need a more delicate touch. Git gives you that fine-grained control with a few other flags.</p><ul><li><strong><code>--ignore-space-change</code> (<code>-b</code>)</strong>: This one is a bit less aggressive. It ignores changes in the <em>amount</em> of whitespace but will still flag lines where whitespace was added or removed entirely.</li><li><strong><code>--ignore-blank-lines</code></strong>: Perfect for when someone adds empty lines to space out code for readability. This flag hides those new blank lines, confirming that no actual logic was touched.</li><li><strong><code>--ignore-space-at-eol</code></strong>: This one is super specific, targeting only the trailing whitespace at the end of lines. Since many IDEs clean this up automatically, it can create a lot of unnecessary noise in commits.</li></ul><blockquote><strong>Pro Tip:</strong> Don't forget you can chain these flags together. Running <code>git diff --ignore-space-change --ignore-blank-lines</code> gives you a super clean view by hiding both indentation changes and new blank lines.</blockquote><h4 id="comparing-git-diff-whitespace-flags">Comparing Git Diff Whitespace Flags</h4><p>To make it even clearer, here’s a quick rundown of which flag to use and when.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Flag</th>
+<th align="left">What It Ignores</th>
+<th align="left">Best Use Case</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><code>--ignore-space-at-eol</code></strong></td>
+<td align="left">Trailing whitespace at the end of lines.</td>
+<td align="left">Cleaning up diffs after an IDE auto-formats.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>--ignore-blank-lines</code></strong></td>
+<td align="left">Lines that are entirely empty.</td>
+<td align="left">Reviewing code where spacing was added for readability.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>--ignore-space-change</code> (<code>-b</code>)</strong></td>
+<td align="left">Changes in the amount of whitespace.</td>
+<td align="left">When indentation has changed but no new lines were added.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>--ignore-all-space</code> (<code>-w</code>)</strong></td>
+<td align="left"><em>All</em> whitespace changes.</td>
+<td align="left">When a linter has reformatted an entire file.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>Knowing which flag to grab in the moment makes code reviews faster and far more accurate. You can instantly confirm whether a change is a simple reformatting pass or a substantive update to the code's logic.</p><p>For a deeper dive into these and other powerful commands, this <a href="https://articles.mergify.com/git-cheat-sheet-2023/">comprehensive Git cheat sheet</a> is an excellent resource to keep handy.</p><h2 id="set-up-git-to-ignore-whitespace-by-default">Set Up Git to Ignore Whitespace by Default</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/0c9b992b-0ffc-4d19-8892-359e0e491859.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Typing <code>-w</code> or other flags before every single diff gets old, fast. If you find yourself constantly ignoring the same kinds of whitespace changes, it’s a good sign it's time to teach Git your preferences. By tweaking your Git configuration, you can make clean, focused diffs the default behavior, saving you a ton of keystrokes down the line.</p><p>The central hub for these kinds of settings is your <code>.gitconfig</code> file. You can make changes that apply to every repository on your machine (globally) or just to the one you're currently working in (locally). This distinction is pretty important for staying flexible across different projects that might have their own team standards.</p><h3 id="configuring-your-global-git-settings">Configuring Your Global Git Settings</h3><p>For a setting you want to apply everywhere, the <code>--global</code> flag is your best friend. A great starting point is to just tell Git to ignore all space changes by default for the <code>diff</code> command.</p><p>You can set this up with a single command:<br><code>git config --global diff.tool.external.ignore-space-change true</code></p><p>However, a more powerful and flexible approach is to create an alias. Aliases are custom shortcuts that let you bundle complex commands into simple, memorable ones. For instance, you could create a <code>dw</code> (diff whitespace) alias that runs <code>diff -w</code> for you.</p><p>git config --global alias.dw "diff -w"<br>Now, instead of typing out the full command, you can just run <code>git dw</code> for a whitespace-agnostic diff. This is a neat trick because it keeps your standard <code>git diff</code> behavior intact while giving you a quick command for when you need to ignore the noise.</p><h3 id="fine-tuning-with-corewhitespace">Fine-Tuning with core.whitespace</h3><p>Beyond simple diffs, Git has a more advanced setting called <code>core.whitespace</code> that defines what it considers a "whitespace error." By default, Git is pretty picky and will notice things like trailing whitespace (<code>blank-at-eol</code>) and blank lines at the very end of a file (<code>blank-at-eof</code>).</p><p>You can customize this to fit your team's workflow. For example, if your project's conventions couldn't care less about blank lines at the end of files, you can disable that specific check.</p><blockquote>To turn off the check for blank lines at the end of a file, you can run: <code>git config --global core.whitespace -blank-at-eof</code>. The leading <code>-</code> is the key here; it disables that particular rule without messing with the others.</blockquote><p>This level of configuration is where you can really start to align Git's behavior with your team's established coding standards. For anyone looking to master how these settings fit into the broader world of code management, our <a href="https://articles.mergify.com/version-control-git-developers-guide-code-management/"><strong>developer's guide to version control with Git</strong></a> offers some great context and best practices. Setting these defaults thoughtfully is all about making your tools work <em>for</em> you, not against you.</p><p>Let's be real, you're not just working on the command line. Your workflow spans across different tools, and you need a consistent way to handle code changes everywhere. Applying whitespace-ignoring principles directly inside your development environment is how you make clean diffs a natural part of your process, not just another command you have to remember.</p><p>This isn't just about <code>git diff</code>, either. Plenty of other Git commands get a serious upgrade when you tell them to ignore whitespace. One of the most powerful examples is <code>git blame</code>.</p><h3 id="finding-the-real-author-with-git-blame">Finding the Real Author with Git Blame</h3><p>Ever run <code>git blame</code> on a file, only to see that the last person to touch every single line was just the developer who ran the auto-formatter? It's a common and frustrating problem.</p><p>The fix is simple: <code>git blame -w</code>.</p><p>This little flag tells Git to completely skip over any commits that <em>only</em> changed whitespace. Suddenly, you can see who <em>actually</em> wrote the logic, not just who tidied up the indentation. It's an indispensable trick for digging into a codebase's history without getting sidetracked by purely cosmetic updates.</p><p>This isn't some new-fangled feature; it's a response to a problem developers have faced for years. When <a href="https://git-scm.com/?ref=articles.mergify.com">Git</a> first launched back in <strong>2005</strong>, its diff tools were pretty basic. But as projects grew, whitespace "noise" became a huge source of fatigue for code reviewers. By <strong>2008</strong>, Git had already incorporated specific flags to separate meaningful edits from formatting tweaks. You can learn more about <a href="https://www.linuxactionshow.com/git-diff-ignore-whitespace/?ref=articles.mergify.com">the evolution of Git's diff tools at linuxactionshow.com</a>.</p><blockquote>When you ignore whitespace in <code>git blame</code>, you get a much truer picture of a file's intellectual history. You can trace decisions back to their real source, which makes it infinitely easier to understand <em>why</em> a piece of code exists in the first place.</blockquote><h3 id="configuring-your-favorite-ides-and-guis">Configuring Your Favorite IDEs and GUIs</h3><p>Most modern IDEs and Git GUI clients have built-in settings to ignore whitespace in their visual diff viewers. This is fantastic because it means you get the same clean comparison whether you're in your terminal or your favorite editor.</p><p>Here’s where to look in a couple of popular tools:</p><ul><li><strong>Visual Studio Code:</strong> Pop open the Source Control view and click the <code>...</code> (ellipsis) menu. You can easily toggle options like "Show Whitespace Changes" to clean up the inline diff.</li><li><strong>JetBrains IDEs (IntelliJ, PyCharm, etc.):</strong> When you're in the diff viewer window, find the "View Settings" option (it's usually a gear icon). From there, you can select "Ignore whitespaces" and even choose how aggressively it ignores them, much like the command-line flags.</li></ul><p>Setting this up in your tools brings the power of a clean <code>git diff</code> right into your daily workflow, making sure you're always focused on the changes that truly matter.</p><h2 id="common-mistakes-to-avoid">Common Mistakes to Avoid</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/3c5076e7-2f04-4a22-b31e-565130f10f71.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>The <code>git diff</code> options for ignoring whitespace are fantastic for cutting through the noise in a review, but treating them as a magic fix is a recipe for disaster. The single biggest mistake is blindly trusting a whitespace-ignored diff. This is especially dangerous when you're working with languages where indentation isn't just for pretty formatting—it’s the syntax.</p><p>Think about languages like <strong>Python</strong> or <strong>YAML</strong>. A single misplaced space or tab can completely alter the program's logic. An indented block might accidentally move from an <code>if</code> statement into a <code>for</code> loop, fundamentally changing its behavior in a way that <code>git diff -w</code> would make completely invisible. That's how you introduce subtle, nightmare-inducing bugs.</p><h3 id="overlooking-significant-formatting">Overlooking Significant Formatting</h3><p>Another common pitfall is ignoring whitespace so aggressively that you miss genuinely meaningful changes. Sure, a linter reformatting an entire file is just noise. But what about a developer who intentionally adds blank lines to separate logical blocks of code? That's a signal.</p><p>That kind of deliberate formatting improves readability, and ignoring it means you miss part of the author’s intent.</p><blockquote>The goal is to filter out <em>unintentional noise</em>, not to ignore deliberate and meaningful code structuring. Always consider the context of the changes before applying a broad ignore flag.</blockquote><p>This is exactly why a layered review process is so important.</p><h3 id="a-safer-review-workflow">A Safer Review Workflow</h3><p>To sidestep these issues, I always recommend a two-pass review strategy.</p><p>First, go ahead and use the whitespace-ignoring flags for your initial pass. It’s a great way to quickly get the gist of the core logic changes without getting distracted by a sea of minor formatting adjustments. You can focus on the substance first.</p><p>But before you hit that merge button, <strong>always perform a second pass with all whitespace visible</strong>. This final check is your safety net, ensuring no syntax-altering indentation changes or other subtle problems are hiding in plain sight.</p><p>Here are a few best practices to bake into your team's workflow:</p><ul><li><strong>Know Your Language:</strong> Be extra cautious in whitespace-sensitive languages. This is non-negotiable for Python, YAML, or F#.</li><li><strong>Use <code>.editorconfig</code>:</strong> The best way to deal with whitespace noise is to prevent it from ever being committed. An <code>.editorconfig</code> file helps enforce consistent standards across your entire team.</li><li><strong>Final Diff Check:</strong> Never, ever merge a pull request without viewing the full, unfiltered diff at least once.</li></ul><p>This balanced approach lets you get all the benefits of clean diffs without falling for their blind spots. It also keeps your commit history clean and intentional, which makes everything easier—including those times you need to <a href="https://articles.mergify.com/git-resolve-conflicts/">resolve Git conflicts</a>.</p><h3 id="got-questions-lets-clear-things-up">Got Questions? Let's Clear Things Up</h3><p>Even when you know the commands, a few common "what if" scenarios always come up. Here are some quick answers to the questions I hear most often when developers start trying to ignore whitespace in their diffs.</p><h3 id="does-ignoring-whitespace-in-a-diff-affect-the-actual-merge">Does Ignoring Whitespace in a Diff Affect the Actual Merge?</h3><p>Nope, not at all. Think of a flag like <code>-w</code> as a pair of special glasses—it only changes how you <em>see</em> the diff in your terminal. It has <strong>zero impact</strong> on the actual data Git will use when you perform a merge.</p><p>The catch is that the underlying whitespace differences are still there, and they <em>can</em> pop up as merge conflicts. To get ahead of this, you can tell Git to be smarter during the merge itself with a strategy option like <code>git merge -Xignore-space-change</code>. But honestly, the best practice is always to get your team's formatting aligned <em>before</em> you even get to the merge stage.</p><h3 id="is-it-ever-a-bad-idea-to-ignore-whitespace">Is It Ever a Bad Idea to Ignore Whitespace?</h3><p>Absolutely. In some languages, whitespace isn't just for looks—it's syntax. In Python, F#, or even YAML files, changing the indentation can completely alter the logic. A change that <code>git diff -w</code> shows as a simple re-indent might actually be moving a chunk of code out of a loop or into the wrong <code>if</code> block.</p><blockquote>Always be mindful of the language and context. A broad ignore flag like <code>-w</code> might hide a critical, logic-breaking change in a whitespace-sensitive file. It’s a powerful tool, but you have to use it with care.</blockquote><h3 id="can-i-ignore-whitespace-when-using-git-blame-too">Can I Ignore Whitespace When Using Git Blame, Too?</h3><p>Yes, and this is one of my favorite Git tricks. Running <code>git blame -w</code> is a game-changer. It tells Git to skip over any commits that <em>only</em> changed whitespace when it's figuring out who wrote each line.</p><p>This is how you find the person who introduced the actual logic, not just the last developer whose code formatter decided to re-indent the entire file. It gives you a much more honest history of a file's evolution and can save you a ton of detective work when you're trying to figure out why a particular line of code exists.</p><hr><p>Ready to stop wrestling with your CI pipeline and start shipping faster? <strong>Mergify</strong> provides intelligent merge queues and protections to automate your pull requests, secure your code, and give your developers back their most valuable resource: time. <a href="https://mergify.com/?ref=articles.mergify.com">Discover how Mergify can streamline your workflow today.</a></p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>

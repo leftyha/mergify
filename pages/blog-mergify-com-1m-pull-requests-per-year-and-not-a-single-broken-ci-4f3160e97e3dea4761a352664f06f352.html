@@ -1,0 +1,535 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>1M Pull Requests per Year and Not a Single Broken CI</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="1M Pull Requests per Year and Not a Single Broken CI">
+    <meta property="og:description" content="At Mergify, we merge more than 1M pull requests every year on behalf of our users.
+
+That’s not a brag about volume. That’s a statement of purpose.
+
+Because behind every single one of those pull requests, there’s one simple promise we’re keeping:
+
+👉 Your CI will never">
+    <meta property="og:url" content="https://articles.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/">
+    <meta property="og:image" content="https://articles.mergify.com/content/images/size/w1200/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg">
+    <meta property="article:published_time" content="2025-04-17T08:13:30.000Z">
+    <meta property="article:modified_time" content="2025-04-17T08:13:52.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="1M Pull Requests per Year and Not a Single Broken CI">
+    <meta name="twitter:description" content="At Mergify, we merge more than 1M pull requests every year on behalf of our users.
+
+That’s not a brag about volume. That’s a statement of purpose.
+
+Because behind every single one of those pull requests, there’s one simple promise we’re keeping:
+
+👉 Your CI will never">
+    <meta name="twitter:url" content="https://articles.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/">
+    <meta name="twitter:image" content="https://articles.mergify.com/content/images/size/w1200/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Julien Danjou">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta name="twitter:creator" content="@juldanjou">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="754">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Julien Danjou",
+        "image": {
+            "@type": "ImageObject",
+            "url": "//www.gravatar.com/avatar/e35a717bd24f271b29b4d1a7dcb5fde6?s=250&d=mm&r=x",
+            "width": 250,
+            "height": 250
+        },
+        "url": "https://articles.mergify.com/author/jd/",
+        "sameAs": [
+            "https://julien.danjou.info",
+            "https://x.com/juldanjou"
+        ]
+    },
+    "headline": "1M Pull Requests per Year and Not a Single Broken CI",
+    "url": "https://articles.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/",
+    "datePublished": "2025-04-17T08:13:30.000Z",
+    "dateModified": "2025-04-17T08:13:52.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://articles.mergify.com/content/images/size/w1200/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg",
+        "width": 1200,
+        "height": 754
+    },
+    "keywords": "Basic Knowledge",
+    "description": "At Mergify, we merge more than 1M pull requests every year on behalf of our users.\n\nThat’s not a brag about volume. That’s a statement of purpose.\n\nBecause behind every single one of those pull requests, there’s one simple promise we’re keeping:\n\n👉 Your CI will never break after a merge.\n\nThat’s our job. That’s why we exist.\n\n\nThe Problem Nobody Likes to Talk About\n\nIf you’ve worked in software long enough, you know the story:\n\n * A pull request is opened.\n * CI passes.\n * A few more PRs get me",
+    "mainEntityOfPage": "https://articles.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="233736c9-258f-45e6-a63a-b912aafb36b1" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge featured">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">1M Pull Requests per Year and Not a Single Broken CI</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/jd/">
+                                <img class="author-profile-image" src="//www.gravatar.com/avatar/e35a717bd24f271b29b4d1a7dcb5fde6?s=250&amp;d=mm&amp;r=x" alt="Julien Danjou">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/jd/">Julien Danjou</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-04-17">17 Apr 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 2 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="/content/images/size/w320/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg 320w,
+                    /content/images/size/w600/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg 600w,
+                    /content/images/size/w960/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg 960w,
+                    /content/images/size/w1200/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg 1200w,
+                    /content/images/size/w2000/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="/content/images/size/w1200/2025/04/jdanjou_funny_drawing_of_an_engineer_staring_at_a_rainbow_--a_b32f9b7c-88cf-4c38-8ccd-03722fe08506_1-1.jpg" alt="1M Pull Requests per Year and Not a Single Broken CI">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>At Mergify, we merge more than <strong>1M pull requests every year</strong> on behalf of our users.</p><p>That’s not a brag about volume. That’s a statement of purpose.</p><p>Because behind every single one of those pull requests, there’s one simple promise we’re keeping:</p><p><img draggable="false" class="emoji" alt="👉" src="https://twemoji.maxcdn.com/svg/1f449.svg"> <strong>Your CI will never break after a merge.</strong></p><p>That’s our job. That’s why we exist.</p><h2 id="the-problem-nobody-likes-to-talk-about"><strong>The Problem Nobody Likes to Talk About</strong></h2><p>If you’ve worked in software long enough, you know the story:</p><ul><li>A pull request is opened.</li><li>CI passes.</li><li>A few more PRs get merged.</li><li>Yours gets merged too — it’s green, no conflicts.</li><li>Five minutes later, CI on main is red.</li></ul><p><img draggable="false" class="emoji" alt="💥" src="https://twemoji.maxcdn.com/svg/1f4a5.svg"> Boom. Something broke. And now no one knows why.</p><p>This is one of the most frustrating and costly problems in software development. You thought CI passing meant everything was safe. It wasn’t. You merged something that looked fine on its own, but was stale. Out of sync. Behind just enough commits to break once it hit the main branch.</p><p>Now you have to stop everything:</p><ul><li>Revert the PR</li><li>Investigate what failed</li><li>Fix main</li><li>Block other engineers from merging</li><li>Rebuild confidence</li></ul><p>All because your CI didn’t tell the whole story.</p><figure class="kg-card kg-image-card"><img src="https://articles.mergify.com/content/images/2025/04/jdanjou_funny_drawing_of_a_complex_machine_exploding_system_f_97dc3dcf-d896-4558-b9c5-fb74bc01c11c_0.jpg" class="kg-image" alt="" loading="lazy" width="2000" height="1256" srcset="https://articles.mergify.com/content/images/size/w600/2025/04/jdanjou_funny_drawing_of_a_complex_machine_exploding_system_f_97dc3dcf-d896-4558-b9c5-fb74bc01c11c_0.jpg 600w, https://articles.mergify.com/content/images/size/w1000/2025/04/jdanjou_funny_drawing_of_a_complex_machine_exploding_system_f_97dc3dcf-d896-4558-b9c5-fb74bc01c11c_0.jpg 1000w, https://articles.mergify.com/content/images/size/w1600/2025/04/jdanjou_funny_drawing_of_a_complex_machine_exploding_system_f_97dc3dcf-d896-4558-b9c5-fb74bc01c11c_0.jpg 1600w, https://articles.mergify.com/content/images/2025/04/jdanjou_funny_drawing_of_a_complex_machine_exploding_system_f_97dc3dcf-d896-4558-b9c5-fb74bc01c11c_0.jpg 2000w" sizes="(min-width: 720px) 720px"></figure><h2 id="enter-the-merge-queue"><strong>Enter the Merge Queue</strong></h2><p>This is the kind of chaos Mergify was built to eliminate.</p><p>Our <a href="https://mergify.com/product/merge-queue?ref=articles.mergify.com" rel="noreferrer"><strong>Merge Queue</strong></a> product is more than a way to manage pull requests. It’s a <em>safety system</em>.</p><p>Every PR goes through the queue. Every PR is tested against the latest version of main, <em>before</em> it’s merged. Not after.</p><p>That means:</p><ul><li>No stale merges</li><li>No guessing</li><li>No surprises</li></ul><p>Just reliable, deterministic CI — every single time.</p><p>When we merge your PR, you can deploy it confidently. You know it was tested <em>as it will run in production</em>.</p><h2 id="why-we-take-this-so-seriously"><strong>Why We Take This So Seriously</strong></h2><p>We merge 50,000 pull requests per month not just because it’s technically cool. We do it because <strong>our users trust us to protect their main branch</strong>.</p><p>That’s the contract:</p><ul><li>We test what matters, when it matters</li><li>We catch what your CI alone can’t</li><li>We handle the messy edge cases, the race conditions, the queue prioritization</li></ul><p>So you don’t have to worry about it.</p><h2 id="never-break-the-ci-again"><strong>Never Break the CI Again</strong></h2><p>CI is supposed to be the safety net for your codebase. But without a proper merge queue, it’s not a net — it’s a minefield.</p><p>At Mergify, we believe <strong>CI should never break after a merge</strong>. It’s not a luxury. It’s table stakes for modern engineering.</p><p>That’s why we built Mergify.</p><p>That’s why we run the queue, 24/7, for teams big and small.</p><p>And that’s why every one of those 1 million merges is a little victory — not just for us, but for every engineer who gets to ship code without the stress.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"></div><div id="sodo-search-root"></div></body></html>

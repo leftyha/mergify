@@ -1,0 +1,582 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>Master Jenkins CI/CD Pipelines for Better DevOps</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Learn how to optimize and automate your software delivery with our guide to Jenkins CI/CD. Boost efficiency and reliability today!">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/jenkins-cicd-2/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Master Jenkins CI/CD Pipelines for Better DevOps">
+    <meta property="og:description" content="Learn how to optimize and automate your software delivery with our guide to Jenkins CI/CD. Boost efficiency and reliability today!">
+    <meta property="og:url" content="https://articles.mergify.com/jenkins-cicd-2/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg">
+    <meta property="article:published_time" content="2025-10-04T09:41:12.000Z">
+    <meta property="article:modified_time" content="2025-10-04T09:41:15.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Master Jenkins CI/CD Pipelines for Better DevOps">
+    <meta name="twitter:description" content="Learn how to optimize and automate your software delivery with our guide to Jenkins CI/CD. Boost efficiency and reliability today!">
+    <meta name="twitter:url" content="https://articles.mergify.com/jenkins-cicd-2/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "Master Jenkins CI/CD Pipelines for Better DevOps",
+    "url": "https://articles.mergify.com/jenkins-cicd-2/",
+    "datePublished": "2025-10-04T09:41:12.000Z",
+    "dateModified": "2025-10-04T09:41:15.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "When you hear &quot;CI/CD,&quot; there&#x27;s a good chance Jenkins comes to mind. It&#x27;s the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle, letting development teams ship software faster and more reliably. Its massive plugin ecosystem and open-source flexibility have cemented it as a cornerstone of modern DevOps.\n\n\nWhy Jenkins Still Leads in DevOps Automation\n\n\n\n\n\nBefore we rol",
+    "mainEntityOfPage": "https://articles.mergify.com/jenkins-cicd-2/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="2579acd7-28aa-4b3d-b659-6d5b3b4cf0ef" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"><div class="gh-announcement-bar dark"><div class="gh-announcement-bar-content"><p dir="ltr"><span>🚀 </span><b><strong>Now GA:</strong></b><span> </span><a href="https://mergify.com/products/ci-insights" rel="noreferrer"><span>CI Insights</span></a><span> helps you spot flaky jobs, cut CI costs, and ship faster. </span><a href="https://dashboard.mergify.com" rel="noreferrer"><span>Try it free</span></a><span>.</span></p></div><button aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16" width="16"><path stroke-linecap="round" stroke-width="0.4" fill="currentColor" stroke="#000000" stroke-linejoin="round" d="M.44,21.44a1.49,1.49,0,0,0,0,2.12,1.5,1.5,0,0,0,2.12,0l9.26-9.26a.25.25,0,0,1,.36,0l9.26,9.26a1.5,1.5,0,0,0,2.12,0,1.49,1.49,0,0,0,0-2.12L14.3,12.18a.25.25,0,0,1,0-.36l9.26-9.26A1.5,1.5,0,0,0,21.44.44L12.18,9.7a.25.25,0,0,1-.36,0L2.56.44A1.5,1.5,0,0,0,.44,2.56L9.7,11.82a.25.25,0,0,1,0,.36Z"></path></svg></button></div></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-10-04">04 Oct 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 17 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>When you hear "CI/CD," there's a good chance <a href="https://www.jenkins.io/?ref=articles.mergify.com">Jenkins</a> comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle, letting development teams ship software faster and more reliably. Its massive plugin ecosystem and open-source flexibility have cemented it as a cornerstone of modern DevOps.</p><h2 id="why-jenkins-still-leads-in-devops-automation">Why Jenkins Still Leads in DevOps Automation</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/37c2b9cf-d908-4e43-80c0-8485d07b1576.jpg" class="kg-image" alt="An abstract visual representation of a CI/CD pipeline with gears and arrows, symbolizing automation and workflow." loading="lazy"></figure><p></p><p>Before we roll up our sleeves and get into the nitty-gritty of configuration, it's worth taking a moment to appreciate why Jenkins is still such a powerhouse. In an era of shiny new cloud-native tools, Jenkins holds its ground, especially for organizations that need granular control over their software delivery lifecycle.</p><p>Its staying power isn't just about being the legacy option; it’s about incredible adaptability. Think of Jenkins as a central hub, capable of connecting a wild variety of tools and technologies. This makes it a lifesaver in complex environments where you might need to integrate anything from an old-school mainframe to a cutting-edge container orchestration platform.</p><h3 id="the-power-of-the-plugin-ecosystem">The Power of the Plugin Ecosystem</h3><p>One of the biggest reasons to bet on Jenkins is its sprawling plugin library. With over <strong>1,850</strong> community-contributed plugins available, you can connect Jenkins to virtually any tool in your stack.</p><p>Imagine you need to integrate a niche static analysis tool or a proprietary deployment system. With other platforms, you might be stuck writing complex custom scripts—if it's even possible. With Jenkins, there’s a good chance someone has already built a plugin for that. This flexibility is gold because it lets you build a workflow that fits your team, not the other way around.</p><blockquote>Jenkins' true strength lies in its ability to be whatever you need it to be. It’s a blank canvas for automation, giving you the power to construct a CI/CD process that fits your team's exact workflow, not the other way around.</blockquote><p>This extensibility isn't just a convenience; it delivers real business results. We've seen enterprises use Jenkins to automate highly complex testing scenarios, pushing their build success rates from a respectable <strong>60–85%</strong> up to an impressive <strong>98%</strong>. That’s the kind of tangible impact a well-oiled Jenkins pipeline can have.</p><h3 id="unmatched-customization-and-control">Unmatched Customization and Control</h3><p>As an open-source platform, Jenkins gives you the keys to the kingdom. You aren't locked into a vendor's ecosystem or at the mercy of their feature roadmap. This kind of freedom is critical, especially for companies in regulated industries like finance or government that have to meet strict security and compliance standards.</p><p>With Jenkins, you can:</p><ul><li><strong>Host on-premises</strong> for total data sovereignty and security.</li><li><strong>Tweak the source code</strong> to build out custom functionality.</li><li><strong>Define intricate pipelines</strong> using a <code>Jenkinsfile</code>, embracing "Pipeline as Code" to make your build process version-controlled and rock-solid repeatable.</li></ul><p>This level of control, combined with its huge footprint—holding an estimated <strong>44% market share</strong>—cements its role as a key player in automation. When you see stats showing a potential ROI of up to <strong>426%</strong> from productivity gains, it's easy to see why it remains a top pick for serious DevOps teams.</p><p>Yes, the user interface has historically been a bit of a pain point, but recent updates are bringing a much-needed modern touch, making it more welcoming for newcomers. As we get into setting up your first pipeline, you'll see how Jenkins merges its legacy of reliability with modern CI/CD practices. If you're curious about the broader landscape, it's helpful to see how Jenkins stacks up in our <a href="https://articles.mergify.com/ci-cd-tools-comparison/">CI/CD tools comparison</a>.</p><h2 id="setting-up-your-jenkins-environment-for-success">Setting Up Your Jenkins Environment for Success</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/5ed05edd-5882-4b10-82f7-f9889b3c7bc5.jpg" class="kg-image" alt="A developer working on a laptop with code and diagrams overlayed, representing a well-prepared development environment." loading="lazy"></figure><p>A powerful <strong>Jenkins CI/CD</strong> pipeline doesn’t magically appear. It’s built on a stable, well-prepared foundation. Taking the time to get your environment right <em>before</em> you even download Jenkins will save you from a world of headaches later on. Think of this as the pre-flight check that ensures a smooth journey into automation.</p><p></p><p>First things first, you need to provision the right hardware. While Jenkins <em>can</em> technically run on minimal specs, any real-world setup is going to demand more. For a small team or a pilot project, you might get by with a controller node that has <strong>2 vCPUs and 4 GB of RAM</strong>. But for a production environment juggling multiple projects, you should be aiming for at least <strong>4 vCPUs and 8-16 GB of RAM</strong> to keep performance bottlenecks at bay.</p><p>Disk space is another detail that’s easy to get wrong. A base install is tiny, but your build artifacts, logs, and workspaces will eat up storage faster than you think. A good starting point is <strong>50 GB of SSD storage</strong> for the controller, but be ready to scale this as your usage grows. Fast disk I/O is crucial here, so always opt for SSDs over old-school hard drives.</p><h3 id="nailing-the-java-development-kit-installation">Nailing the Java Development Kit Installation</h3><p><a href="https://www.jenkins.io/?ref=articles.mergify.com">Jenkins</a> is a Java application, plain and simple. That means having the correct Java Development Kit (JDK) installed is non-negotiable. Currently, Jenkins requires JDK 11, 17, or 21. My advice? Stick with a Long-Term Support (LTS) version like <strong>JDK 17</strong> for maximum stability.</p><p>Installing the wrong version is a classic pitfall that leads to all sorts of mysterious errors during setup or when you start adding plugins. Once you've installed your chosen JDK, you <em>must</em> configure the <code>JAVA_HOME</code> environment variable. It's a simple but vital step that tells Jenkins where to find its Java runtime.</p><p>After setting it, pop open your terminal and run a quick command to verify the path. This little confirmation step ensures the system sees the right Java version, preventing a lot of startup failures.</p><blockquote><strong>Pro Tip:</strong> Whatever you do, don't run Jenkins as the <code>root</code> user. Creating a dedicated, non-privileged user (e.g., <code>jenkins</code>) is a fundamental security best practice. This simple action contains the potential damage if the Jenkins instance is ever compromised, isolating its processes from the rest of your system.</blockquote><h3 id="preparing-your-version-control-system">Preparing Your Version Control System</h3><p>Your code needs a home, and for most of us, that's <a href="https://github.com/?ref=articles.mergify.com">GitHub</a>, <a href="https://about.gitlab.com/?ref=articles.mergify.com">GitLab</a>, or another Git-based provider. Before you can hook it up to Jenkins, you'll need a repository ready to go. Go ahead and create a new, empty repository for the project you’re about to automate.</p><p>Next, you'll need a secure way for Jenkins to talk to that repository. The best approach is generating a <strong>Personal Access Token (PAT)</strong>.</p><ul><li><strong>For GitHub:</strong> Head to your Developer settings and generate a new token with <code>repo</code> scopes. This gives Jenkins just enough permission to clone the repository and update commit statuses.</li><li><strong>For GitLab:</strong> Go to Access Tokens and create a token with <code>api</code>, <code>read_repository</code>, and <code>write_repository</code> scopes.</li></ul><p>Treat these tokens like passwords—they're just as sensitive. Store them securely, because you’ll need one when you configure the pipeline job in Jenkins.</p><p>With your hardware provisioned, Java installed, and repository access configured, your environment is now perfectly primed for a successful Jenkins installation.</p><h2 id="your-first-jenkins-pipeline-with-jenkinsfile">Your First Jenkins Pipeline with Jenkinsfile</h2><p>Okay, with the setup out of the way, it's time for the fun part: bringing your first <strong>Jenkins CI/CD</strong> pipeline to life. This is where we move from theory to a tangible, automated workflow that you can build on. We’re going to focus on doing this the right way from the start, using Pipeline as Code.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/cf6ba48a-16cf-48e9-bdd4-5d83b1bae9f1.jpg" class="kg-image" alt="A schematic of a code pipeline flowing from a repository through build, test, and deploy stages, illustrating the CI/CD process." loading="lazy"></figure><p></p><p>First things first, you need to get the Jenkins service running. Whether you installed it with a package manager like <code>apt</code> or are running it inside a <a href="https://www.docker.com/?ref=articles.mergify.com">Docker</a> container, the process is pretty similar. Once it's active, just pop open a browser and head to <code>http://localhost:8080</code>.</p><p>You'll be asked to unlock Jenkins with an initial admin password. The service generates this and tucks it away in a file on the server. Grab that password, paste it in, and you’ll land on the setup wizard. It's a straightforward process that guides you through installing some recommended plugins and creating your first admin user.</p><h3 id="understanding-pipeline-as-code-with-jenkinsfile">Understanding Pipeline as Code with Jenkinsfile</h3><p>The modern, and frankly, the best way to define a <strong>Jenkins CI/CD</strong> workflow is with a <code>Jenkinsfile</code>. This is just a text file that you commit directly into your project's source code repository. Treating your pipeline definition as code gives you some massive advantages:</p><ul><li><strong>Version Control:</strong> Your pipeline is versioned right alongside your application. You can track its history, see who changed what, and roll back if something breaks.</li><li><strong>Collaboration:</strong> Everyone on the team can view and suggest improvements to the pipeline through pull requests, just like any other piece of code.</li><li><strong>Repeatability:</strong> A <code>Jenkinsfile</code> makes your build process portable. You can easily spin up the same pipeline on a different Jenkins instance or in a new environment without manual configuration.</li></ul><p>This "Pipeline as Code" philosophy is the cornerstone of a transparent and scalable automation culture. It’s no wonder its adoption has been explosive. Between June 2021 and June 2023, the number of monthly Jenkins Pipeline jobs shot up by <strong>79%</strong>, from around 27 million to nearly <strong>48.6 million</strong>. This isn't just a trend; it's a fundamental shift in how teams deliver software. You can dig into more stats over on the CD Foundation's website.</p><h3 id="crafting-a-declarative-jenkinsfile">Crafting a Declarative Jenkinsfile</h3><p><a href="https://www.jenkins.io/?ref=articles.mergify.com">Jenkins</a> gives you two flavors of pipeline syntax: Scripted and Declarative. For most people, especially when you're starting out, <strong>Declarative Pipeline</strong> is the way to go. It's much more structured and readable, which makes creating and maintaining your pipeline a whole lot simpler.</p><p>Let's look at a basic Declarative <code>Jenkinsfile</code>.</p><p>pipeline {<br>agent any</p><pre><code class="hljs language-javascript">stages {
+    <span class="hljs-title function_">stage</span>(<span class="hljs-params"><span class="hljs-string">'Checkout'</span></span>) {
+        steps {
+            echo <span class="hljs-string">'Checking out source code...'</span>
+            <span class="hljs-comment">// This is where you'd pull your code</span>
+            git <span class="hljs-string">'https://github.com/your-username/your-repo.git'</span>
+        }
+    }
+    <span class="hljs-title function_">stage</span>(<span class="hljs-params"><span class="hljs-string">'Build'</span></span>) {
+        steps {
+            echo <span class="hljs-string">'Building the application...'</span>
+            <span class="hljs-comment">// An example for a Node.js project</span>
+            sh <span class="hljs-string">'npm install'</span>
+        }
+    }
+    <span class="hljs-title function_">stage</span>(<span class="hljs-params"><span class="hljs-string">'Test'</span></span>) {
+        steps {
+            echo <span class="hljs-string">'Running unit tests...'</span>
+            <span class="hljs-comment">// A typical test command</span>
+            sh <span class="hljs-string">'npm test'</span>
+        }
+    }
+}
+</code></pre><p>}</p><p>This simple structure is the backbone of nearly every pipeline you'll build. It's clean, logical, and easy for anyone on your team to understand what's happening at a glance.</p><blockquote>Think of a well-structured <code>Jenkinsfile</code> like a recipe. Each <code>stage</code> is a distinct step, and the <code>steps</code> are the specific actions you take. Keeping it clean makes your automation process easy to follow and maintain.</blockquote><p>Here’s a quick breakdown of the key pieces:</p><ol><li><strong><code>pipeline</code></strong>: The main block that wraps your entire pipeline definition.</li><li><strong><code>agent any</code></strong>: This tells Jenkins it can run this job on any available agent. It's the simplest way to get up and running.</li><li><strong><code>stages</code></strong>: This contains all the distinct phases of your pipeline, like building, testing, and deploying.</li><li><code><strong>stage('Name')</strong></code>: Each <code>stage</code> defines a specific part of the workflow. The name you give it shows up in the Jenkins UI, making it easy to visualize your pipeline's progress.</li><li><code><strong>steps</strong></code>: This is where the real work happens. Inside a <code>stage</code>, the <code>steps</code> block holds the actual commands, whether it's running a shell script (<code>sh</code>), checking out code (<code>git</code>), or just printing a message (<code>echo</code>).</li></ol><h3 id="launching-your-first-pipeline-job">Launching Your First Pipeline Job</h3><p>Now that you have a <code>Jenkinsfile</code> committed to your repository, the last piece of the puzzle is telling Jenkins about it.</p><p>From your Jenkins dashboard, click "New Item." Give your job a name, select "Pipeline" from the list, and hit OK. This takes you to the configuration page.</p><p>Scroll down to the "Pipeline" section. This is where you connect your job to your repository.</p><ul><li><strong>Definition:</strong> Change the dropdown to "Pipeline script from SCM."</li><li><strong>SCM:</strong> Select "Git."</li><li><strong>Repository URL:</strong> Paste in the URL to your Git repository.</li><li><strong>Credentials:</strong> If your repo is private, you’ll need to add the Personal Access Token you created earlier.</li><li><strong>Script Path:</strong> This defaults to <code>Jenkinsfile</code>, which is exactly what we need.</li></ul><p>Save your configuration, and you're all set! On the job's main page, click "Build Now." You'll see Jenkins kick off the pipeline, lighting up each <code>stage</code> in the UI as it runs. And that's it—you've just launched your first automated <strong>Jenkins CI/CD</strong> pipeline.</p><h2 id="advanced-pipeline-optimization-techniques">Advanced Pipeline Optimization Techniques</h2><p>Getting your first <strong>Jenkins CI/CD</strong> pipeline up and running is a huge win, but it’s really just the starting point. The real magic begins when you start to refine that pipeline, aiming to shave precious minutes—or sometimes even hours—off your build and test cycles.</p><p>A fast, efficient pipeline isn’t just about saving a few bucks on compute costs. It's about tightening the feedback loop for your developers. A slow pipeline is a productivity killer. When an engineer has to wait <strong>30 minutes</strong> or more for feedback on a change, they switch context, their flow is broken, and momentum is lost. Optimizing your pipeline is about giving that valuable time back to your team.</p><p>Let's move past the basics and dig into some powerful techniques that can turn your standard pipeline into a high-performance automation machine.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/b24077c7-76d3-46a7-b3f5-9db3c3527819.jpg" class="kg-image" alt="Infographic about jenkins cicd" loading="lazy"></figure><p></p><p>This visual lays out the fundamental journey of code, but the biggest gains come from optimizing what happens <em>within</em> each stage, especially during the build and test phases.</p><h3 id="running-stages-in-parallel">Running Stages in Parallel</h3><p>One of the most impactful changes you can make is to run your stages in parallel. By default, Jenkins executes each stage sequentially, one after the other. If you have a 10-minute build, a 15-minute integration test suite, and a 5-minute security scan, your total pipeline time is a cumulative <strong>30 minutes</strong>.</p><p>But think about it: do those tasks really depend on each other? Often, they don't. The security scan probably doesn't need to wait for the integration tests to finish. By running them in parallel, you can slash your total execution time. The pipeline's duration becomes the length of your <em>longest</em> stage, not the sum of all of them.</p><p>Here’s how you can set this up in your <code>Jenkinsfile</code>:</p><p>stage('Build and Test in Parallel') {<br>parallel {<br>stage('Unit Tests') {<br>steps {<br>echo 'Running unit tests...'<br>sh './run-unit-tests.sh'<br>}<br>}<br>stage('Integration Tests') {<br>steps {<br>echo 'Running integration tests...'<br>sh './run-integration-tests.sh'<br>}<br>}<br>stage('Linting') {<br>steps {<br>echo 'Running linter...'<br>sh './run-linter.sh'<br>}<br>}<br>}<br>}</p><p>In this setup, unit tests, integration tests, and linting all kick off at the same time. If the integration tests are the longest job at <strong>15 minutes</strong>, the entire parallel block completes in just 15 minutes. You’ve just cut your pipeline time in half.</p><h3 id="distributing-the-workload-with-agent-nodes">Distributing the Workload with Agent Nodes</h3><p>As your team and project portfolio grow, running every single job on the main Jenkins controller is a recipe for disaster. The controller's real job is to orchestrate pipelines and manage the UI, not to do the heavy lifting of compiling code or running resource-intensive tests. Overloading it grinds everything to a halt.</p><p>The solution is to use agent nodes. These are separate machines that connect to the Jenkins controller and take on the actual build jobs. This distributed approach offers some serious advantages:</p><ul><li><strong>Scalability:</strong> Need more capacity? Just spin up more agents. Your CI/CD system can grow right alongside your team.</li><li><strong>Isolation:</strong> You can create specialized agents for specific tasks. Maybe you need macOS agents for building iOS apps or Linux agents with specific SDKs installed for your backend services.</li><li><strong>Performance:</strong> Offloading the work keeps the Jenkins controller light and responsive, focused on its core task of workflow management.</li></ul><p>Telling your pipeline to use an agent is straightforward. You can assign labels to your nodes (like <code>linux-docker</code>) and then simply reference that label in your <code>Jenkinsfile</code>.</p><p>pipeline {<br>agent { label 'linux-docker' }<br>// ... your stages go here<br>}</p><p>This tells Jenkins to find an available agent with the <code>linux-docker</code> label and run the entire pipeline there, keeping the controller free.</p><h3 id="jenkins-pipeline-optimization-techniques-compared">Jenkins Pipeline Optimization Techniques Compared</h3><p>Choosing the right optimization strategy depends on your specific bottlenecks. Some changes are quick wins, while others require more setup. This table breaks down the most common techniques to help you decide where to focus your efforts.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>Primary Benefit</th>
+<th>Implementation Complexity</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Parallel Execution</strong></td>
+<td>Drastically reduces total pipeline time</td>
+<td>Low</td>
+<td>Pipelines with multiple long-running, independent stages (e.g., tests, scans).</td>
+</tr>
+<tr>
+<td><strong>Distributed Builds</strong></td>
+<td>Improves scalability and controller stability</td>
+<td>Medium</td>
+<td>Growing teams, multiple projects, or resource-intensive build jobs.</td>
+</tr>
+<tr>
+<td><strong>Smart Caching</strong></td>
+<td>Speeds up builds by reusing dependencies</td>
+<td>Medium</td>
+<td>Projects with large dependency trees (Node.js, Java, Ruby).</td>
+</tr>
+<tr>
+<td><strong>Conditional Execution</strong></td>
+<td>Saves resources by skipping unnecessary stages</td>
+<td>Low</td>
+<td>Reducing CI load on feature branches or for non-code changes.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>Ultimately, a combination of these methods will give you the best results. Start by identifying your longest-running stages and see if they can be parallelized or if their dependencies can be cached.</p><h3 id="implementing-smart-caching-strategies">Implementing Smart Caching Strategies</h3><p>How much time does your pipeline waste downloading the same dependencies over and over again? For projects with large dependency trees—think Node.js, Java, or Ruby—this can easily add several minutes to every single build.</p><p>Smart caching is the fix. By storing dependencies on your build agent after the first run, subsequent builds can grab them from a local cache instead of fetching them across the network. This can make the setup phase of your job lightning-fast.</p><p>While there are various plugins and strategies, a common approach is to use a shared directory on the agent, keyed to your dependency file (like <code>package-lock.json</code> or <code>pom.xml</code>). The cache is only busted and rebuilt when that file actually changes.</p><blockquote>A good caching strategy doesn't just make builds faster; it makes them more reliable. By reducing your reliance on external package repositories, you insulate your pipeline from network hiccups or registry downtime.</blockquote><p>For more hands-on examples, you might be interested in our guide on <a href="https://articles.mergify.com/using-jenkins-to-optimize-your-ci-cd-pipeline/"><strong>using Jenkins to optimize your CI/CD pipeline</strong></a>, which dives deeper into practical applications.</p><h3 id="conditionally-executing-stages">Conditionally Executing Stages</h3><p>Not every stage needs to run on every single commit. For example, deploying to a staging environment is probably overkill for a minor documentation fix on a feature branch. Running stages conditionally based on the branch name or other criteria is a fantastic way to conserve resources.</p><p>The <code>when</code> directive in a Declarative Pipeline gives you precise control over this.</p><p>stage('Deploy to Staging') {<br>when {<br>branch 'main'<br>}<br>steps {<br>echo 'Deploying to the staging environment...'<br>sh './deploy-staging.sh'<br>}<br>}</p><p>Here, the "Deploy to Staging" stage will <strong>only</strong> run for builds on the <code>main</code> branch. Commits to other branches will skip it, leading to much faster pipelines for day-to-day development.</p><p>By combining these advanced techniques—parallel execution, distributed builds, smart caching, and conditional logic—you can transform your <strong>Jenkins CI/CD</strong> setup from a simple automation tool into a highly efficient software delivery machine.</p><h2 id="automating-pull-requests-with-mergify">Automating Pull Requests with Mergify</h2><p>So, you've optimized your <strong>Jenkins CI/CD</strong> pipeline and it's running like a well-oiled machine. That's a huge win. But what happens when the pipeline finishes? The most significant bottleneck is often what comes next: the pull request (PR) lifecycle.</p><p>Your developers push their code, Jenkins does its thing, and then… everything grinds to a halt. The whole process waits for a human to see the green checkmark and finally click that "Merge" button. This tiny manual step introduces delays and kills momentum—exactly the kind of friction CI/CD is supposed to eliminate.</p><p>This is where a tool like <a href="https://mergify.com/?ref=articles.mergify.com">Mergify</a> can completely change your game. By connecting Mergify to your Jenkins setup, you can build a truly hands-off workflow where PRs merge automatically the second all your checks pass. It’s a small change that has a massive impact, freeing up engineers to focus on their next task instead of babysitting pull requests.</p><h3 id="creating-a-truly-hands-off-workflow">Creating a Truly Hands-Off Workflow</h3><p>Getting this set up is surprisingly straightforward. Mergify uses a simple YAML file, <code>.mergify.yml</code>, right in your repository to define its automation rules. To create a rule that waits for Jenkins, you just need to define a condition that checks for the successful completion of your Jenkins status check.</p><p>Here’s a practical example of what that looks like:</p><p>pull_request_rules:</p><ul><li>name: Automatic merge on CI success<br>conditions:<ul><li>"#approved-reviews-by&gt;=1"</li><li>"status-success=Jenkins CI"<br>actions:<br>merge:<br>method: merge</li></ul></li></ul><p>In this setup, Mergify will only merge a pull request when two things happen: it gets at least one approving review, and the status check named "Jenkins CI" reports a success. Since your Jenkins pipeline is already reporting this status back to your Git provider, the integration just works.</p><p>To see what else is possible, you can dive deeper into how to <a href="https://articles.mergify.com/supercharge-your-jenkins-workflow-with-mergify/"><strong>supercharge your Jenkins workflow with Mergify</strong></a>.</p><h3 id="preventing-broken-builds-with-a-merge-queue">Preventing Broken Builds with a Merge Queue</h3><p>Automated merges are a great start, but a new problem can pop up when multiple PRs are ready to go at the same time. If you just merge them one after another without re-testing, you risk what’s called a "semantic conflict"—where two PRs that pass on their own end up breaking the main branch when combined. It's a frustratingly common issue for fast-moving teams.</p><p>Mergify's <strong>merge queue</strong> is built to solve this exact problem. Instead of merging PRs directly into your main branch, it adds them to a queue. The queue then systematically tests each PR against the <em>very latest</em> version of the target branch, making sure the cumulative result is always stable.</p><blockquote>The merge queue acts as a gatekeeper for your main branch. It serializes merges and validates changes against the most up-to-date code, effectively eliminating the risk of a CI race condition that can bring development to a halt.</blockquote><p>This is critical for keeping your codebase healthy. A broken main branch can block an entire engineering organization, costing thousands in lost productivity. The merge queue ensures that only validated, conflict-free code ever makes it in.</p><p>This kind of intelligent automation is part of a larger trend. The DevOps market is projected to grow from <strong>$18.4 billion</strong> in 2023 to <strong>$25 billion</strong> by 2025, and Jenkins still leads the CI/CD space with about <strong>46.35%</strong> market share. This growth is fueled by the need for tools that can keep up with modern development speed, and integrations like Mergify are a key part of that ecosystem. You can find more details in these <a href="https://radixweb.com/blog/devops-statistics?ref=articles.mergify.com"><strong>DevOps statistics</strong></a>.</p><p>In today's world, combining a powerful <strong>Jenkins CI/CD</strong> pipeline with smart automation isn't just a nice-to-have; it's a competitive necessity.</p><h2 id="got-jenkins-questions-weve-got-answers">Got Jenkins Questions? We've Got Answers</h2><p>When you're in the thick of a <strong>Jenkins CI/CD</strong> implementation, you're going to hit a few snags. It's just part of the process. From handling secrets to figuring out why a build is dragging its feet, every team runs into the same handful of questions.</p><p>Let's walk through some of the most common ones and get you clear, practical answers so you can get back to building.</p><h3 id="how-should-i-manage-secrets-in-jenkins">How Should I Manage Secrets in Jenkins?</h3><p>This is usually one of the first big hurdles. Let me be clear: you should never, ever hardcode API keys, passwords, or SSH keys directly into your <code>Jenkinsfile</code>. It's a massive security risk and makes rotating credentials an absolute nightmare.</p><p>The right way to do this is with the built-in <strong>Credentials Plugin</strong>, which comes standard with Jenkins. It’s designed specifically to store secrets safely. You can then inject them into your pipeline as environment variables when it runs, keeping them completely out of your source code and build logs.</p><p>For even better control, you can scope your credentials:</p><ul><li><strong>Global Scope:</strong> Available to any pipeline on your Jenkins instance.</li><li><strong>Folder or Pipeline Scope:</strong> Locks them down to specific projects for tighter access control.</li></ul><p>My advice? Always use the narrowest scope you can get away with. It's a simple practice of least privilege and a cornerstone of any secure <strong>Jenkins CI/CD</strong> setup.</p><h3 id="declarative-vs-scripted-pipeline-syntax">Declarative vs. Scripted Pipeline Syntax</h3><p>Jenkins gives you two ways to write your <code>Jenkinsfile</code>: Declarative and Scripted. Picking the right one from the start will save you a lot of headaches down the road.</p><p><strong>Declarative Pipeline</strong> is the modern, more structured approach. It gives you a clean, predefined hierarchy (<code>pipeline</code>, <code>agent</code>, <code>stages</code>, <code>steps</code>) that's incredibly easy for anyone on the team to read and understand. For the vast majority of projects, this is what you should be using. Its simplicity and maintainability are huge wins.</p><p><strong>Scripted Pipeline</strong>, on the other hand, is a more powerful, Groovy-based syntax. It offers almost unlimited flexibility for complex logic, loops, and conditional actions. But that power comes at a cost—a much steeper learning curve and pipelines that can quickly become difficult to maintain.</p><blockquote>If you're starting a new project, just use Declarative Pipeline. Its rigid structure is a feature, not a bug. It pushes you toward best practices and keeps your automation accessible to everyone.</blockquote><h3 id="what-should-i-check-for-a-slow-build">What Should I Check for a Slow Build?</h3><p>"Why is my build so slow?" It's a classic. Before you start throwing more expensive hardware at the problem, pop open your build logs and see which stages are taking the most time.</p><p>More often than not, the culprit is one of these usual suspects:</p><ul><li><strong>Slow Dependency Downloads:</strong> If <code>npm install</code> or <code>mvn dependency:resolve</code> is taking ages, you need a caching strategy. Reusing dependencies from a local cache instead of downloading them every single time can easily shave minutes off your build.</li><li><strong>Serial Test Execution:</strong> Running thousands of tests one by one? That's your bottleneck. Break them up and run them in parallel stages. This one change can dramatically cut down your total execution time.</li><li><strong>Under-Resourced Agents:</strong> Keep an eye on the CPU and memory usage on your agent nodes during a build. If they're maxed out, your builds will crawl. The fix is straightforward: distribute the workload across more agents or upgrade to more powerful ones.</li></ul><hr><p>Ready to stop babysitting your CI and eliminate the manual work of merging pull requests? <strong>Mergify</strong> automates your entire PR lifecycle, from running checks to merging code, all while protecting your main branch with an intelligent merge queue. Ship faster and with more confidence. <a href="https://mergify.com/?ref=articles.mergify.com">Learn more at Mergify</a>.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-reset-hard-origin/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-a0847b9e-7d1c-4bf5-9bc9-e47f0a9b0f32.jpg" alt="A Guide to Git Reset Hard Origin" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Guide to Git Reset Hard Origin</h3>
+                    <p class="gh-card-excerpt is-body">The command git reset --hard origin/branch-name is the Git equivalent of hitting a big, red "factory reset" button for your local branch. It's a forceful way to make your local work an exact mirror of what's on the remote server.
+
+When you run</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-02">02 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>

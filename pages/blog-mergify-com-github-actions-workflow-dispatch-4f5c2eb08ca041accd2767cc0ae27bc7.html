@@ -1,0 +1,562 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>GitHub Actions Workflow Dispatch Guide: Automate with Ease</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Learn how to use github actions workflow_dispatch to automate workflows effortlessly. Boost your CI/CD with our step-by-step guide!">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/github-actions-workflow-dispatch/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="GitHub Actions Workflow Dispatch Guide: Automate with Ease">
+    <meta property="og:description" content="Learn how to use github actions workflow_dispatch to automate workflows effortlessly. Boost your CI/CD with our step-by-step guide!">
+    <meta property="og:url" content="https://articles.mergify.com/github-actions-workflow-dispatch/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg">
+    <meta property="article:published_time" content="2025-09-23T08:34:25.000Z">
+    <meta property="article:modified_time" content="2025-09-23T08:34:28.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="GitHub Actions Workflow Dispatch Guide: Automate with Ease">
+    <meta name="twitter:description" content="Learn how to use github actions workflow_dispatch to automate workflows effortlessly. Boost your CI/CD with our step-by-step guide!">
+    <meta name="twitter:url" content="https://articles.mergify.com/github-actions-workflow-dispatch/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "GitHub Actions Workflow Dispatch Guide: Automate with Ease",
+    "url": "https://articles.mergify.com/github-actions-workflow-dispatch/",
+    "datePublished": "2025-09-23T08:34:25.000Z",
+    "dateModified": "2025-09-23T08:34:28.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "In a world obsessed with full automation, sometimes you just need a big red button. That&#x27;s exactly what the github actions workflow_dispatch event gives you—a way to manually kick off a workflow whenever you decide. It&#x27;s the perfect tool for those critical tasks that need a human go-ahead, like deploying a last-minute hotfix or running a tricky data migration.\n\n\nWhy Manual Triggers Are a CI/CD Game-Changer\n\nLook, aiming for a fully automated CI/CD pipeline is a great goal, but some jobs just don",
+    "mainEntityOfPage": "https://articles.mergify.com/github-actions-workflow-dispatch/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="7f718a77-1715-4e96-8b68-50593432764a" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"><div class="gh-announcement-bar dark"><div class="gh-announcement-bar-content"><p dir="ltr"><span>🚀 </span><b><strong>Now GA:</strong></b><span> </span><a href="https://mergify.com/products/ci-insights" rel="noreferrer"><span>CI Insights</span></a><span> helps you spot flaky jobs, cut CI costs, and ship faster. </span><a href="https://dashboard.mergify.com" rel="noreferrer"><span>Try it free</span></a><span>.</span></p></div><button aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16" width="16"><path stroke-linecap="round" stroke-width="0.4" fill="currentColor" stroke="#000000" stroke-linejoin="round" d="M.44,21.44a1.49,1.49,0,0,0,0,2.12,1.5,1.5,0,0,0,2.12,0l9.26-9.26a.25.25,0,0,1,.36,0l9.26,9.26a1.5,1.5,0,0,0,2.12,0,1.49,1.49,0,0,0,0-2.12L14.3,12.18a.25.25,0,0,1,0-.36l9.26-9.26A1.5,1.5,0,0,0,21.44.44L12.18,9.7a.25.25,0,0,1-.36,0L2.56.44A1.5,1.5,0,0,0,.44,2.56L9.7,11.82a.25.25,0,0,1,0,.36Z"></path></svg></button></div></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">GitHub Actions Workflow Dispatch Guide: Automate with Ease</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-09-23">23 Sep 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 13 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-68676393-15c8-433d-9449-6861d35451c3.jpg" alt="GitHub Actions Workflow Dispatch Guide: Automate with Ease">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>In a world obsessed with full automation, sometimes you just need a big red button. That's exactly what the <strong>github actions workflow_dispatch</strong> event gives you—a way to manually kick off a workflow whenever you decide. It's the perfect tool for those critical tasks that need a human go-ahead, like deploying a last-minute hotfix or running a tricky data migration.</p><h2 id="why-manual-triggers-are-a-cicd-game-changer">Why Manual Triggers Are a CI/CD Game-Changer</h2><p>Look, aiming for a fully automated <a href="https://articles.mergify.com/cicd/">CI/CD pipeline</a> is a great goal, but some jobs just don't fit that model. You wouldn't want to run a resource-hogging security scan or backfill a massive dataset on every single commit, right? That would be a huge waste of time and money.</p><p>This is where manual triggers shine. They add a crucial layer of control, turning your rigid, automated system into a flexible toolkit you can use on demand. It's a sign of a mature, well-thought-out delivery process.</p><h3 id="when-to-reach-for-workflowdispatch">When to Reach for <code>workflow_dispatch</code></h3><p>The real value of <code>workflow_dispatch</code> pops up in those high-stakes situations where timing and precision are everything. It’s about giving your team the confidence to run operations that might otherwise feel a bit risky.</p><p>I’ve seen it save the day in a bunch of scenarios:</p><ul><li><strong>Hotfix Deployments:</strong> A critical bug needs to go out <em>now</em>, not with the next scheduled release. A manual trigger gets it done instantly.</li><li><strong>Data Migrations:</strong> You need to run a sensitive database update. It's much safer to trigger it yourself during a planned low-traffic window.</li><li><strong>On-Demand Reporting:</strong> Need to generate a massive performance report for a quarterly review? Run it once, manually, without bogging down your daily builds.</li><li><strong>Infrastructure Provisioning:</strong> Spinning up a temporary staging environment for a client demo is a perfect use case for a manual trigger.</li></ul><p>GitHub introduced the <code>workflow_dispatch</code> event for exactly these kinds of situations. It gives you the power to run a workflow directly from the GitHub UI or API, ensuring things happen precisely when and how you want them to.</p><h3 id="kicking-off-a-workflow-from-the-github-ui">Kicking Off a Workflow from the GitHub UI</h3><p>The most straightforward way to use a manual trigger is right from your repository's "Actions" tab. As soon as you add the <code>workflow_dispatch</code> event to your workflow file, a "Run workflow" button magically appears. Anyone on your team with write access can then click it to start the job.</p><p>Here’s what you'll see in the GitHub interface:</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/1eb46363-b1d0-4f09-80d3-d8ff16b09579.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>This simple button is incredibly powerful. It empowers everyone—from developers to project managers—to execute complex processes safely without ever touching the command line. It’s a huge boost for operational clarity and efficiency.</p><h2 id="kicking-off-your-first-manual-workflow">Kicking Off Your First Manual Workflow</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/1308ed4f-0d83-4390-acd3-820ddaf56eca.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Alright, theory is one thing, but let's actually build something. Getting your first manually triggered workflow up and running is surprisingly quick. The magic lies in a small, yet powerful, addition to your workflow's YAML file that signals to <a href="https://github.com/?ref=articles.mergify.com">GitHub</a> that it should show the "Run workflow" button.</p><p>We're going to start with a dead-simple example. The point isn't to create a full-blown deployment pipeline right now, but just to make sure the trigger is wired up correctly and everything works as expected. Once you have this basic building block down, adding complexity later is much easier.</p><h3 id="the-magic-snippet-workflowdispatch">The Magic Snippet: <code>workflow_dispatch</code></h3><p>To enable a manual trigger, you just need to add the <code>on</code> key to your workflow file, followed by <code>workflow_dispatch:</code>. That's it. GitHub is constantly watching your <code>.github/workflows</code> directory, and any file containing this trigger will get the manual run option in your repository's "Actions" tab.</p><p>Let's make a new file called <code>manual-greeting.yml</code> and place it inside your <code>.github/workflows</code> directory.</p><p>Here's a complete, minimal example you can copy and paste directly:</p><p>name: Manual Greeting</p><p>on:<br>workflow_dispatch:</p><p>jobs:<br>say-hello:<br>runs-on: ubuntu-latest<br>steps:<br>- name: Print a greeting<br>run: echo "Hello, world! This workflow was triggered manually."</p><p>Once you commit this file to your repository's main branch, head over to the "Actions" tab. You should now see "Manual Greeting" in the list of available workflows on the left. Click on it, and the "Run workflow" button will be waiting for you.</p><h3 id="making-sure-it-all-works">Making Sure It All Works</h3><p>The change is immediate after you commit the file. Go ahead and click that "Run workflow" button. A small dropdown will pop up, asking which branch you want to run the workflow on. For this simple test, your default branch is perfect. Click the green "Run workflow" button inside the dropdown to get things started.</p><p>A new run for your workflow will appear. If you click into it, you'll see the "say-hello" job. After it finishes, you can expand the "Print a greeting" step and see the output you defined: <code>"Hello, world! This workflow was triggered manually."</code></p><blockquote><strong>The Key Takeaway:</strong> Just having <code>on: workflow_dispatch:</code> in your YAML file is all it takes to enable the "Run workflow" button. Even an empty block like <code>workflow_dispatch: {}</code> works just fine.</blockquote><p>This little test proves a few important things:</p><ul><li><strong>Your syntax is valid:</strong> The YAML file is structured in a way GitHub understands.</li><li><strong>Permissions are correct:</strong> You have the necessary rights to execute actions in the repository.</li><li><strong>You have a foundation:</strong> This file is now a launchpad. You can build on it by adding more intricate jobs, steps, and logic, all based on a trigger you know works.</li></ul><p>You now have a solid, functioning model. From here, the next logical step is to evolve this static trigger into something more interactive by adding user inputs. This is where you can turn a simple button into a genuinely powerful and configurable tool for your entire team.</p><h2 id="using-dynamic-inputs-to-create-flexible-workflows">Using Dynamic Inputs to Create Flexible Workflows</h2><p>A static manual trigger is a great start, but <code>workflow_dispatch</code> truly shines when you introduce <strong>dynamic inputs</strong>. This feature essentially turns a simple "run" button into a small, interactive form, letting you pass custom data directly into your workflow when you kick it off. It’s the difference between a single-purpose script and a versatile, multi-tool for your CI/CD pipeline.</p><p>By defining an <code>inputs</code> block right under <code>workflow_dispatch</code>, you can prompt anyone running the workflow for crucial information directly in the <a href="https://github.com/?ref=articles.mergify.com">GitHub</a> UI. Think about deploying to different environments, specifying a version tag, or toggling a feature flag—all without having to touch the workflow file itself. This is a game-changer for reducing the number of nearly identical workflow files you have to maintain.</p><h3 id="defining-your-first-interactive-form">Defining Your First Interactive Form</h3><p>Let’s build on our last example and add some user-configurable options. We’ll set up a workflow that simulates a deployment, but this time, it will ask the user to specify the target environment and the version tag they want to deploy. This is a classic, real-world scenario that perfectly shows off how flexible <code>workflow_dispatch</code> can be.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/903db7df-afad-4aba-9d10-0edb1e47d181.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>As you can see, this creates a simple, effective bridge between the person triggering the action and the automation that runs behind the scenes.</p><h3 id="exploring-different-input-types">Exploring Different Input Types</h3><p>When you define your inputs, you're not just limited to plain text boxes. <a href="https://github.com/features/actions?ref=articles.mergify.com">GitHub Actions</a> supports several input types that render different UI components, making your forms more intuitive and helping to prevent user error.</p><p>Here are the ones you'll probably use most often:</p><ul><li><strong><code>string</code></strong>: The default. This gives you a standard text field for any kind of free-form input, like a version number or a specific commit hash.</li><li><strong><code>boolean</code></strong>: This shows up as a simple checkbox. It’s perfect for on/off toggles, like a "force deployment" or "run tests" option.</li><li><code><strong>choice</strong></code>: My personal favorite for preventing mistakes. This creates a dropdown menu with predefined options, so you can be sure a user will select from a valid list, such as <code>staging</code> or <code>production</code>.</li><li><strong><code>environment</code></strong>: A specialized dropdown that automatically lists the deployment environments you've configured in your repository. This is the safest way to ensure you’re deploying to a valid, pre-approved target.</li></ul><blockquote>By carefully selecting your input types, especially <code>choice</code> and <code>environment</code>, you're building guardrails directly into your manual processes. This is a massive win for reducing the risk of human error during critical operations like a production deployment.</blockquote><h3 id="configuring-your-workflowdispatch-inputs">Configuring Your <code>workflow_dispatch</code> Inputs</h3><p>To give you fine-grained control over the form, each input can be configured with a few key properties. Understanding these is essential for creating a smooth user experience.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Property</th>
+<th align="left">Required?</th>
+<th align="left">Data Type</th>
+<th align="left">Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><code>description</code></strong></td>
+<td align="left">No</td>
+<td align="left"><code>string</code></td>
+<td align="left">The text that appears in the UI to guide the user. Clear descriptions are key!</td>
+</tr>
+<tr>
+<td align="left"><strong><code>required</code></strong></td>
+<td align="left">No</td>
+<td align="left"><code>boolean</code></td>
+<td align="left">Set to <code>true</code> if the user <em>must</em> provide a value before running the workflow.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>default</code></strong></td>
+<td align="left">No</td>
+<td align="left"><code>string</code>, <code>boolean</code></td>
+<td align="left">A fallback value used if the user doesn't provide one. Great for setting safe defaults.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>type</code></strong></td>
+<td align="left">No</td>
+<td align="left"><code>string</code></td>
+<td align="left">The data type for the input. This controls the UI element shown to the user.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>These properties work together to create a form that's not just functional but also user-friendly and less prone to errors.</p><h3 id="putting-it-all-together-in-a-real-world-example">Putting It All Together in a Real-World Example</h3><p>Alright, let's modify our workflow file to include these dynamic inputs. The configuration below defines two inputs: <code>environment</code> is a <strong>required choice</strong>, and <code>version</code> is an <strong>optional string</strong> with a default value. We then access these values inside our job steps using the <code>github.event.inputs</code> context.</p><p>name: Dynamic Deployment<br>on:<br>workflow_dispatch:<br>inputs:<br>environment:<br>description: 'Target environment'<br>required: true<br>type: choice<br>options:<br>- staging<br>- production<br>version:<br>description: 'Version tag to deploy (e.g., v1.2.3)'<br>required: false<br>default: 'latest'</p><p>jobs:<br>deploy:<br>runs-on: ubuntu-latest<br>steps:<br>- name: Checkout code<br>uses: actions/checkout@v3</p><pre><code class="hljs language-bash">  - name: Deploy to environment
+    run: |
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"<img draggable="false" class="emoji" alt="🚀" src="https://twemoji.maxcdn.com/svg/1f680.svg"> Starting deployment..."</span>
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"Target Environment: <span class="hljs-variable">${{ github.event.inputs.environment }</span>}"</span>
+      <span class="hljs-built_in">echo</span> <span class="hljs-string">"Version Tag: <span class="hljs-variable">${{ github.event.inputs.version }</span>}"</span>
+</code></pre><p>The whole idea of using variables to configure pipelines is a cornerstone of modern CI/CD. While this example is all about GitHub Actions, you can check out this comprehensive guide on <a href="https://articles.mergify.com/gitlab-ci-variables-complete-guide-pipeline-configuration/">GitLab CI variables</a> that explores very similar principles.</p><p>With this setup, anyone triggering the workflow gets a clean, simple form. It turns what could be a complex deployment process into a straightforward, guided action.</p><h2 id="advanced-uses-for-workflow-dispatch">Advanced Uses for Workflow Dispatch</h2><p>Once you've gotten the hang of dynamic inputs, <code>workflow_dispatch</code> stops being just a simple "run now" button. It starts to feel more like a core component of your internal tooling, almost like building your own little developer platform. It becomes the friendly front-end for a whole suite of powerful, on-demand tools that let your entire team get things done safely and quickly.</p><p>Think about it: you can create a whole catalog of actions for your developers. Instead of having to remember a gnarly command-line flag or track down the right script, they can just pop over to the Actions tab in GitHub. There, they'll find a pre-approved, tested workflow ready to go for all sorts of common tasks. It's a massive boost for both productivity and consistency across the team.</p><h3 id="building-an-on-demand-operational-toolkit">Building an On-Demand Operational Toolkit</h3><p>What are the routine, but absolutely critical, jobs your engineering team does all the time? A lot of those are prime candidates for a <code>workflow_dispatch</code> trigger. These workflows essentially become a simple "pane of glass" for complex operations, hiding all the messy details under the hood.</p><p>Here are a few real-world examples I've seen work incredibly well:</p><ul><li><strong>Cache Clearing:</strong> A one-click workflow that instantly purges caches in your CDN or application after a deployment goes sideways. No more fumbling for credentials in the middle of an incident.</li><li><strong>Report Generation:</strong> An action that securely queries a production database to pull a resource usage report for the finance department.</li><li><strong>One-Click Rollbacks:</strong> A lifesaver. This workflow takes a previous release tag as an input and redeploys it, giving you a lightning-fast way to recover when things go wrong.</li><li><strong>Seeding Staging Data:</strong> A tool for the QA team to refresh a staging environment with fresh, anonymized data before they kick off a testing cycle.</li></ul><p>Tools like these just lower the mental overhead for everyone. They also drastically reduce the chance of someone making a mistake under pressure.</p><blockquote>The real magic of building an operational toolkit with <code>workflow_dispatch</code> is that it makes these tasks accessible. It lets team members who aren't deep experts perform complex jobs with confidence, because the entire process is baked into a well-defined and peer-reviewed workflow.</blockquote><h3 id="triggering-workflows-across-different-repositories">Triggering Workflows Across Different Repositories</h3><p>Here's where things get really interesting. You can use the <a href="https://docs.github.com/en/rest?ref=articles.mergify.com">GitHub API</a> to have one workflow trigger another one—even if it's in a completely different repository. This is a game-changer for anyone working with microservices, where different parts of the system live in their own repos. You can set up a central "orchestrator" repository that kicks off deployment workflows in all the downstream service repos.</p><p>A common pattern I see is a CI workflow that, upon a successful build, uses an API call to trigger a separate CD deployment workflow via <code>workflow_dispatch</code>. This keeps your concerns nicely separated and makes your pipelines much cleaner. To make this even easier, the community has built some great actions to handle the API calls for you. It's worth checking out a <a href="https://github.com/marketplace/actions/workflow-dispatch?ref=articles.mergify.com">popular action for triggering workflow_dispatch events</a> to get a feel for how they work.</p><p>This technique is also fantastic for decoupling long-running jobs. For instance, you can have a fast-running build-and-unit-test workflow that finishes in a couple of minutes. Once it's done, it can fire off an API call to start a much slower, resource-heavy integration testing workflow. This way, the slow tests don't clog up the pipeline and block more urgent builds, which is great for keeping developer feedback loops tight and even managing your CI costs.</p><h2 id="best-practices-and-what-to-watch-out-for">Best Practices and What to Watch Out For</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/c2358e0b-bb24-4d14-aa67-d573326fef79.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>It’s one thing to build a powerful manual workflow, but it’s another thing entirely to make it secure, maintainable, and genuinely useful for your team. When you hand someone a button that deploys to production, you absolutely need guardrails in place. Without them, you're just asking for accidental deployments or unauthorized changes.</p><p>This is exactly why <a href="https://docs.github.com/en/actions/deployment/targeting-different-environments/using-environments-for-deployment?ref=articles.mergify.com">GitHub Environments</a> are non-negotiable for any sensitive operation. By routing your <code>workflow_dispatch</code> jobs through a protected environment, you can enforce rules that require a specific person or team to approve the run before it even starts. This simple step adds a critical layer of human oversight right where you need it most.</p><h3 id="locking-down-your-sensitive-workflows">Locking Down Your Sensitive Workflows</h3><p>For any workflow that even gets close to production data, infrastructure, or anything customer-facing, security has to be your top priority. A manual trigger is incredibly convenient, but it also creates a new vector for potential mistakes or misuse.</p><p>Here are a few practices I always stick to:</p><ul><li><strong>Lean on GitHub Environments:</strong> I can't stress this enough. Set up protection rules on environments like <code>production</code> to require reviewers. It's your most effective safety net.</li><li><strong>Keep a Tight Leash on Secrets:</strong> Make sure secrets are only available to the specific jobs that need them, ideally scoped to a protected environment. You can get a much deeper look into how to <a href="https://articles.mergify.com/how-to-protect-secrets-when-using-github-actions/">protect secrets when using GitHub Actions</a> to really tighten up your security posture.</li><li><strong>Grant Only Necessary Permissions:</strong> Use the top-level <code>permissions</code> key in your workflow to give your jobs the absolute minimum permissions they need. Don't hand out broad write access if a job just needs to read repository content.</li></ul><blockquote>The goal isn't to make workflows hard to run; it's to make them impossible to run <em>incorrectly</em>. A few minutes spent configuring environments can save you hours of painful incident response down the road.</blockquote><h3 id="avoiding-common-pitfalls">Avoiding Common Pitfalls</h3><p>I've seen teams make the same few mistakes over and over again when they first start using <code>workflow_dispatch</code>. These small missteps can lead to confusing UIs, brittle automation, and a general lack of trust in the very tools you're trying to build.</p><p>One of the most common errors is creating monolithic workflows that try to do everything. Instead of one giant, unwieldy "do-it-all" action, break your logic down. A focused workflow for "deploy-web-app" and a separate one for "run-database-migration" is infinitely more maintainable.</p><p>Another issue I see all the time is unclear input descriptions. A field labeled <code>target</code> is just plain ambiguous. Is that a server name? A branch? An environment? A much better description like <code>"The deployment environment (e.g., staging, production)"</code> removes all the guesswork. Always write your descriptions from the perspective of someone who has never seen the workflow before.</p><h2 id="digging-into-workflow-dispatch-common-questions">Digging into Workflow Dispatch: Common Questions</h2><p>As you start weaving <code>workflow_dispatch</code> into your daily work, you'll inevitably run into a few common questions. I see these pop up all the time. Getting the answers right is the key to building manual workflows that are both powerful and secure.</p><h3 id="can-one-workflow-kick-off-another-in-a-different-repository">Can One Workflow Kick Off Another in a Different Repository?</h3><p>Yes, and this is an incredibly powerful pattern, especially for anyone working with microservices or complex, multi-repo projects. To pull this off, you'll need to work with the <a href="https://docs.github.com/en/rest?ref=articles.mergify.com">GitHub API</a>.</p><p>The basic recipe is to create a <strong>Personal Access Token (PAT)</strong> with the right <code>repo</code> scope. This token acts as your authentication. You’ll want to store that PAT as an encrypted secret in the repository that’s <em>initiating</em> the action. From there, your workflow can use a simple tool like <code>curl</code> or a dedicated GitHub Action to hit the target repository's dispatches endpoint with a POST request. It's a common and effective way to orchestrate deployments across otherwise separate services.</p><h3 id="where-can-i-find-the-run-history-and-inputs-for-manual-triggers">Where Can I Find the Run History and Inputs for Manual Triggers?</h3><p>GitHub keeps a detailed log of every manual run, which is a lifesaver for debugging and auditing. Just head over to your repository's <strong>"Actions" tab</strong>. Your <code>workflow_dispatch</code> runs are listed right there alongside all your other automated jobs.</p><p>When you click into the summary for a specific run, you'll see a section that clearly lays out all the inputs and the values that were used. This makes it super easy to track down who ran what and with which parameters—invaluable when you're trying to figure out why a specific run behaved differently.</p><blockquote>This built-in audit trail is a critical feature, especially for compliance. It guarantees that every manual action, particularly something sensitive like a production deployment, is fully documented and traceable back to a person and their exact inputs.</blockquote><h3 id="is-there-a-limit-on-how-many-inputs-i-can-have">Is There a Limit on How Many Inputs I Can Have?</h3><p>There is. GitHub currently caps the number of inputs at <strong>10</strong> for a single <code>workflow_dispatch</code> trigger. For most situations, that’s plenty.</p><p>But what if you need more? If you bump up against this limit, the best move is to rethink your inputs. Instead of a dozen individual fields, create a single <code>string</code> input designed to accept a JSON object. Your workflow script can then just parse that JSON to get all the configuration it needs. It's a clean workaround that keeps your UI from getting cluttered.</p><h3 id="how-can-i-control-who-is-allowed-to-trigger-a-manual-workflow">How Can I Control Who Is Allowed to Trigger a Manual Workflow?</h3><p>You absolutely can, and you absolutely <em>should</em> for any workflow that touches a sensitive system. The best tool for this job is <strong>GitHub Environments</strong>.</p><p>Here’s how it works: you create an environment, maybe call it "production," and then set up protection rules for it. These rules can require specific people or teams to sign off on any job targeting that environment. When someone tries to run your <code>workflow_dispatch</code> job, it will automatically pause and wait for an authorized reviewer to give it the green light. This adds a much-needed security checkpoint to your manual processes.</p><hr><p>At <strong>Mergify</strong>, we're all about making your CI/CD pipeline smarter and safer. We help teams ship code faster and with more confidence by automating the merge queue and protecting critical branches. <a href="https://mergify.com/?ref=articles.mergify.com">Learn more about how Mergify can streamline your development workflow.</a></p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"></div><div id="sodo-search-root"></div></body></html>

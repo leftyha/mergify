@@ -1,0 +1,557 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>Automating GUI Testing in Your CI/CD Workflow</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Discover how automating GUI testing can transform your CI/CD pipeline. Learn practical strategies for writing resilient tests and improving release quality.">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/automating-gui-testing/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Automating GUI Testing in Your CI/CD Workflow">
+    <meta property="og:description" content="Discover how automating GUI testing can transform your CI/CD pipeline. Learn practical strategies for writing resilient tests and improving release quality.">
+    <meta property="og:url" content="https://articles.mergify.com/automating-gui-testing/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg">
+    <meta property="article:published_time" content="2025-09-29T08:47:38.000Z">
+    <meta property="article:modified_time" content="2025-09-29T08:47:42.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Automating GUI Testing in Your CI/CD Workflow">
+    <meta name="twitter:description" content="Discover how automating GUI testing can transform your CI/CD pipeline. Learn practical strategies for writing resilient tests and improving release quality.">
+    <meta name="twitter:url" content="https://articles.mergify.com/automating-gui-testing/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "Automating GUI Testing in Your CI/CD Workflow",
+    "url": "https://articles.mergify.com/automating-gui-testing/",
+    "datePublished": "2025-09-29T08:47:38.000Z",
+    "dateModified": "2025-09-29T08:47:42.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "So, what do we actually mean when we talk about automating GUI testing? It&#x27;s the practice of using specialized software tools to run tests on a graphical user interface, checking both its functionality and appearance without anyone having to manually click through screens. This isn&#x27;t just a &quot;nice to have&quot; for modern dev teams; it&#x27;s essential. It dramatically speeds up the testing process, boosts accuracy, and allows you to run frequent, repeatable checks on your UI. By automating these tests, te",
+    "mainEntityOfPage": "https://articles.mergify.com/automating-gui-testing/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="ebf03080-3a7f-4836-8755-c72221d972d8" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">Automating GUI Testing in Your CI/CD Workflow</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-09-29">29 Sep 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 14 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-63f55238-bcbf-46e9-8b90-810c80b7d41d.jpg" alt="Automating GUI Testing in Your CI/CD Workflow">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>So, what do we actually mean when we talk about automating GUI testing? It's the practice of using specialized software tools to run tests on a graphical user interface, checking both its functionality and appearance without anyone having to manually click through screens. This isn't just a "nice to have" for modern dev teams; it's essential. It dramatically speeds up the testing process, boosts accuracy, and allows you to run frequent, repeatable checks on your UI. By automating these tests, teams can spot bugs much earlier in the cycle and, ultimately, ship higher-quality software faster.</p><h2 id="why-automating-gui-testing-is-a-competitive-edge">Why Automating GUI Testing Is a Competitive Edge</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/3f4b0fbf-ef17-4210-b78d-abee91496515.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Let's be honest—in today's development world, sticking to manual-only GUI testing is like tying one hand behind your back. It might feel like enough for a small, simple project, but it quickly becomes a massive bottleneck in any modern Agile or DevOps workflow. Manual checks are just plain slow, and that creates delayed feedback loops that kill your team's momentum.</p><p>And then there's the human element. Manual testing is susceptible to human error. A tester might miss a subtle visual regression that broke on a different screen resolution, or they could forget one crucial step in a complex user journey. These little inconsistencies can easily let bugs slip through to production, damaging the user experience and your company’s reputation.</p><h3 id="the-scaling-problem-with-manual-checks">The Scaling Problem with Manual Checks</h3><p>The limitations of manual testing become glaringly obvious as your application gets bigger and more complex. Imagine your team just shipped a new feature that touches ten different user flows. A manual tester would have to meticulously re-test every single one of those flows. We're talking hours, maybe even days, of repetitive work. That approach just doesn't scale.</p><p>This is precisely where automating your GUI tests moves from being an efficiency boost to a strategic necessity. Automated scripts can blaze through hundreds of regression tests in minutes, giving your developers immediate feedback on every single commit.</p><p>This frees up your talented QA professionals to focus on high-value work that actually requires human intuition and creativity, such as:</p><ul><li><strong>Exploratory Testing:</strong> Actively trying to break the application in unexpected ways to uncover hidden bugs.</li><li><strong>Usability Testing:</strong> Gauging how intuitive and user-friendly the application actually feels to a real person.</li><li><strong>Edge Case Analysis:</strong> Digging into complex scenarios and tricky user paths that automated scripts might not cover.</li></ul><blockquote>By shifting from repetitive manual checks to a robust automation strategy, you transform your QA process from a reactive bottleneck into a proactive quality gate. It’s a move that directly supports faster innovation and a stronger market position.</blockquote><p>The growing emphasis on user experience is driving serious investment in this space. The <strong>GUI Testing Tool market</strong> was valued at around <strong>USD 2.5 billion</strong> and is on track to hit <strong>USD 6 billion by 2033</strong>, reflecting a compound annual growth rate of <strong>12.5%</strong>. This trend makes it clear how critical automation is for delivering the seamless digital products users expect. For a deeper look at what's driving this growth, check out the analysis on <a href="https://www.verifiedmarketreports.com/product/gui-testing-tool-market/?ref=articles.mergify.com">Verified Market Reports</a>.</p><h2 id="choosing-the-right-gui-automation-framework">Choosing The Right GUI Automation Framework</h2><p>Picking a framework for your automated GUI tests is a huge decision. It's one of those foundational choices that will ripple through everything, from how fast your team can write scripts to how much of a headache maintenance becomes down the line. It's easy to get analysis paralysis with all the options out there, but you can cut through the noise by focusing on your team's reality, not just a flashy feature list.</p><p>For instance, if your team already lives and breathes Python, picking a framework that uses it will dramatically lower the barrier to entry. Everyone can get up to speed faster. On the flip side, grabbing the hot new tool without considering your project's tech stack is a recipe for friction. A framework built for a slick, modern single-page app might be total overkill—or just a terrible fit—for your legacy desktop software.</p><p>The real goal here is to find a tool that slots neatly into your current workflow, not one that forces you to tear everything down and start over.</p><h3 id="key-decision-factors-to-consider">Key Decision Factors To Consider</h3><p>Before you even start looking at specific tools, run through this mental checklist. It'll help you evaluate potential frameworks against what actually matters for your team.</p><ul><li><strong>Language and Skill Alignment:</strong> Does the framework use a language your developers already know inside and out, like JavaScript, Python, or Java? Sticking with existing expertise is the single fastest way to get your automation effort off the ground.</li><li><strong>Ecosystem and Community Support:</strong> A vibrant community is a massive asset. It means better documentation, more third-party plugins, and a huge pool of shared knowledge you can tap into when you get stuck. Big open-source players like <a href="https://www.selenium.dev/?ref=articles.mergify.com">Selenium</a> and <a href="https://www.cypress.io/?ref=articles.mergify.com">Cypress</a> have enormous communities, which is a great safety net.</li><li><strong>Integration Capabilities:</strong> How easily will this tool plug into your CI/CD pipeline? You need something that plays nice with Jenkins, GitHub Actions, or whatever you're using. The whole point is to make these GUI tests a fully automated quality gate, so seamless integration is non-negotiable.</li><li><strong>Target Application Technology:</strong> What are you actually testing? Is it a web app built with React? A native iOS app? A clunky old desktop client? Your framework <em>must</em> be compatible with the tech you're targeting. <a href="https://playwright.dev/?ref=articles.mergify.com">Playwright</a>, for example, is brilliant for modern web apps, but you'd need something else entirely for a different environment.</li></ul><p>This is the kind of real-world impact you can expect when you get your automation strategy right.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/c9dd48df-37a1-418d-9a5f-0fa1bb873ba3.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>As you can see, solid automation directly leads to fewer bugs escaping into production and a huge boost in test coverage.</p><h3 id="comparing-popular-gui-automation-frameworks">Comparing Popular GUI Automation Frameworks</h3><p>To give you a better sense of the landscape, let's look at a few of the heavy hitters side-by-side. This table isn't about crowning a single "best" tool, but helping you find the best fit for the job at hand.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th>Framework</th>
+<th>Primary Language</th>
+<th>Best For</th>
+<th>Key Advantage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Selenium</strong></td>
+<td>Java, Python, C#, etc.</td>
+<td>Cross-browser testing at a massive scale for complex web applications.</td>
+<td>Unmatched flexibility and language support; it adapts to almost any environment.</td>
+</tr>
+<tr>
+<td><strong>Cypress</strong></td>
+<td>JavaScript / TypeScript</td>
+<td>Modern web applications, especially those built with JavaScript frameworks.</td>
+<td>A fantastic developer experience with real-time reloads and dead-simple debugging.</td>
+</tr>
+<tr>
+<td><strong>Playwright</strong></td>
+<td>JavaScript / TypeScript</td>
+<td>End-to-end testing of modern web apps needing multi-browser coverage.</td>
+<td>Blazing fast, reliable execution and powerful features like network interception.</td>
+</tr>
+<tr>
+<td><strong>TestComplete</strong></td>
+<td>VBScript, JavaScript</td>
+<td>Enterprise-level testing of desktop, web, and mobile applications.</td>
+<td>An all-in-one commercial solution with incredibly robust object recognition.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>At the end of the day, picking the right framework comes down to one simple truth: the best tool is the one your team will actually <em>use</em>.</p><blockquote>A technically superior framework that sits on a shelf collecting digital dust is worthless. A "good enough" tool that's deeply embedded in your team's daily habits, on the other hand, is invaluable. Always prioritize usability and team fit above all else.</blockquote><h2 id="writing-resilient-and-maintainable-test-scripts">Writing Resilient and Maintainable Test Scripts</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/062c7cc7-d6e1-4052-aaea-927d9ef51939.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>The real test of a GUI automation strategy isn't getting a script to pass once. It's about building tests that don't shatter the moment a developer tweaks a CSS class or renames a button.</p><p>Brittle tests are the number one reason automation efforts collapse. Teams get buried in a soul-crushing cycle of script maintenance, fixing things that were never really broken. The whole point is to create a test suite that can roll with the punches as your UI evolves, freeing up your team to build new tests, not just patch up old ones.</p><p>A few smart practices can make all the difference.</p><h3 id="decouple-ui-elements-with-the-page-object-model">Decouple UI Elements with the Page Object Model</h3><p>One of the most powerful strategies I've seen for boosting maintainability is the <strong>Page Object Model (POM)</strong>. It's a design pattern that completely changes the game by separating <em>what</em> you’re testing (your test logic) from <em>how</em> you find elements on the page.</p><p>Instead of hardcoding CSS selectors or XPath locators right into your test steps, you create a dedicated class for each page or major component of your app. This class acts as a single source of truth, holding all the locators and methods for interacting with that specific part of the UI.</p><ul><li><strong>Your Test Script:</strong> Calls a clean, readable method like <code>loginPage.enterUsername('testuser')</code>.</li><li><strong>Your Page Object:</strong> Contains the messy implementation details, like <code>driver.findElement(By.id('user-name-field')).sendKeys('testuser')</code>.</li></ul><p>Now, when a developer inevitably changes the ID of the username field, you only update it in one place: the <code>LoginPage</code> object. You're not digging through dozens of scripts to fix the same broken locator. It's a simple shift that makes your test suite infinitely easier to manage and debug.</p><blockquote>By abstracting the UI implementation details away, the Page Object Model forces your tests to focus on actual user behavior. This not only makes them more robust but also far more readable for everyone on the team, from QA to product managers.</blockquote><h3 id="implement-smart-waits-not-static-sleeps">Implement Smart Waits, Not Static Sleeps</h3><p>Modern web apps are fundamentally asynchronous. Content loads dynamically, and elements pop into existence when they’re ready—not on a fixed schedule. A classic rookie mistake is scattering fixed delays, or "sleeps," throughout the code to wait for things to appear. This is a horribly unreliable approach. Your tests will either fail when the app is slow or waste precious time when it's fast.</p><p>The professional approach is to use <strong>explicit waits</strong>. You tell your automation framework to wait for a <em>specific condition</em> to be met before moving on—like an element becoming visible or clickable. This small change makes your tests faster and significantly more reliable because they adapt to the application's real-time performance. It's also a crucial first step in tackling intermittent failures and is a core part of any good strategy for <a href="https://articles.mergify.com/flaky-test-detection/">flaky test detection</a>.</p><h3 id="writing-stable-selectors">Writing Stable Selectors</h3><p>The final piece of this puzzle is choosing the right locators in the first place. Relying on those long, complex, auto-generated XPath or CSS selectors is just asking for flaky tests.</p><p>Instead, prioritize selectors that are both stable and descriptive. The absolute best practice? Work with your developers to add unique, test-specific attributes to key elements, like <code>data-testid</code>. These custom attributes are insulated from UI redesigns, making them the most reliable hooks you can get for your automated tests.</p><p>As more teams embrace automation, the benefits become impossible to ignore. Industry data shows <strong>46% of software teams</strong> have now automated more than half of their testing workload. As you build out your own robust scripts, it's always a good idea to cross-reference a comprehensive <a href="https://nextnative.dev/blog/mobile-app-testing-checklist?ref=articles.mergify.com">mobile app testing checklist</a> to ensure you're not missing any critical user scenarios.</p><h2 id="integrating-automated-tests-into-your-cicd-pipeline">Integrating Automated Tests Into Your CI/CD Pipeline</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/11d4699d-32b8-4b60-9177-0b729aa6603d.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>This is the moment where all the effort you put into <strong>automating GUI testing</strong> really starts to pay off. When you embed those slick test scripts directly into your CI/CD pipeline, you're not just running tests anymore. You're building a powerful, automated quality gate.</p><p>This is a critical step. It ensures no new code gets merged until it proves it won't break the user experience.</p><p>The concept is simple but incredibly effective. Instead of running tests manually or on some ad-hoc schedule, they become a core part of your daily development workflow. Every time a developer opens a pull request, the pipeline automatically kicks off, running your entire GUI test suite against the proposed changes.</p><p>Think of it as the ultimate safety net.</p><h3 id="configuring-your-pipeline-triggers">Configuring Your Pipeline Triggers</h3><p>First things first, you need to set up the trigger that kicks off the tests. In most modern CI/CD tools like <a href="https://github.com/features/actions?ref=articles.mergify.com">GitHub Actions</a>, <a href="https://docs.gitlab.com/ee/ci/?ref=articles.mergify.com">GitLab CI</a>, or <a href="https://www.jenkins.io/?ref=articles.mergify.com">Jenkins</a>, this is pretty straightforward. You'll just need to configure a workflow file—usually a <code>.yml</code> file—to listen for specific events.</p><p>A common and highly effective strategy is to trigger the GUI test suite on every <code>pull_request</code> event. This means as soon as a PR is up for review, the tests are already running.</p><p>This gives developers immediate feedback directly within the pull request. They can see if their changes caused a regression before a human reviewer even lays eyes on the code. It’s a proactive approach that catches bugs at the earliest possible moment.</p><p>A GitHub Actions workflow, for instance, might look something like this:</p><p>name: GUI Tests<br>on:<br>pull_request:<br>branches: [ main ]<br>jobs:<br>run-gui-tests:<br>runs-on: ubuntu-latest<br>steps:<br>- name: Checkout code<br>uses: actions/checkout@v3<br>- name: Setup Node.js<br>uses: actions/setup-node@v3<br>with:<br>node-version: '18'<br>- name: Install dependencies<br>run: npm install<br>- name: Run Playwright tests<br>run: npx playwright test</p><p>This simple configuration ensures that every PR targeting the <code>main</code> branch is automatically validated. For a deeper dive into setting this up with a specific framework, our guide on <a href="https://articles.mergify.com/automated-playwright-testing/">https://articles.mergify.com/automated-playwright-testing/</a> offers a detailed walkthrough.</p><h3 id="managing-environments-and-parallel-execution">Managing Environments and Parallel Execution</h3><p>One of the biggest hurdles in CI is managing test environments and keeping the pipeline from turning into a slog. You absolutely need a clean, consistent environment for every test run to avoid flaky results and false negatives. Containerization tools like <a href="https://www.docker.com/?ref=articles.mergify.com">Docker</a> are perfect for this, letting you spin up a pristine application and database for each pipeline execution.</p><p>But here’s the catch: a comprehensive GUI test suite can be slow. Waiting <strong>30 minutes</strong> for feedback on a pull request is a non-starter for fast-moving teams. The solution? Parallelization.</p><blockquote>By running your tests in parallel across multiple virtual machines or containers, you can slash execution time from minutes to moments. Most modern test runners and CI platforms offer built-in support for sharding your test suite, drastically shortening the feedback loop.</blockquote><p>This isn’t just about speed; it’s about protecting developer velocity. When tests are fast, they remain a helpful part of the process instead of becoming a frustrating bottleneck.</p><p>For a truly comprehensive quality approach, you can also integrate performance tests. For applications built on frameworks like Ruby on Rails, you can explore specialized options like <a href="https://www.saeloun.com/ruby-on-rails-performance-services?ref=articles.mergify.com">Ruby on Rails Performance Services</a> for deeper insights.</p><p>Finally, make sure your pipeline provides instant, clear notifications. When a test fails, the right people need to know immediately. Configure your CI tool to post results directly to the pull request and send alerts via Slack or email. Clear, actionable feedback is what makes your automated quality gate a true asset to your team.</p><p>Right, so you’ve got your GUI tests running in the pipeline. That’s a huge first step. But the real magic happens when you start making the whole process smarter and more efficient.</p><p>This is where AI is starting to feel less like a buzzword and more like a genuinely useful tool for GUI testing. It's not some far-off concept anymore; it's a practical way to build test suites that are more resilient and, frankly, less of a pain to maintain.</p><p>We're seeing this shift happen across the board. About <strong>42% of large companies</strong> are already using AI in some form, and that includes AI-driven testing. The teams who get on board with this are seeing big drops in their testing cycle times. You can dig into more of the numbers over at <a href="https://testgrid.io/blog/software-testing-statistics/?ref=articles.mergify.com">TestGrid's software testing statistics</a> if you're curious.</p><h3 id="the-rise-of-ai-in-test-automation">The Rise of AI in Test Automation</h3><p>AI is tackling some of the most common headaches that come with GUI automation. The biggest win, in my opinion, is <strong>self-healing tests</strong>.</p><p>Think about it: how many times has a test failed just because a developer changed a button's ID? It's infuriating. AI-powered tools can get around this by intelligently identifying the element based on other attributes, then automatically updating the locator. This one feature alone can slash the tedious, mind-numbing maintenance that kills so many automation projects.</p><p>Another area where AI is a game-changer is in visual regression testing. These tools are getting incredibly sophisticated. They can:</p><ul><li><strong>Spot visual bugs intelligently</strong>, understanding the page layout and ignoring tiny rendering quirks that would normally trigger false alarms.</li><li><strong>Catch unexpected UI changes</strong> that a functional test would completely miss, keeping your application looking consistent.</li><li><strong>Speed up visual validation</strong> by only showing you the meaningful differences that need a human eye, saving hours of review time.</li></ul><p>These aren't just minor improvements; they make your entire test suite more robust and far less brittle. We’ve written before about how <a href="https://articles.mergify.com/ai-in-automated-testing/">AI in automated testing</a> is helping create tests you can actually trust.</p><h3 id="connecting-advanced-tests-with-smart-merging">Connecting Advanced Tests with Smart Merging</h3><p>Now, having smarter tests is great, but it’s only half the equation. You need a workflow that can automatically act on their results. This is exactly where a tool like Mergify slots in. By setting up an automated merge queue, you essentially create a non-negotiable quality gate for your main branch.</p><blockquote>A merge queue ensures that no pull request is merged until all required checks, including your advanced GUI tests, have passed on the very latest version of the target branch. It effectively eliminates merge conflicts and stops broken code in its tracks.</blockquote><p>This setup creates a powerful, hands-off feedback loop. Your developers get clear, immediate signals on their code's quality without anyone having to manually check or trigger anything.</p><p>If the AI-powered visual tests spot a regression, the PR is automatically blocked. If the self-healing functional tests pass, the code is safely merged into the main branch. This frees up your team to focus on what they do best—building features—with the confidence that an intelligent, automated system is protecting the codebase.</p><h2 id="gotchas-and-questions-in-gui-test-automation">Gotchas and Questions in GUI Test Automation</h2><p>Even with the best-laid plans, you're bound to run into a few tricky spots when you start automating GUI tests. Let's walk through some of the most common questions and roadblocks teams hit, so you can navigate them like a pro.</p><h3 id="how-do-you-handle-dynamic-elements">How Do You Handle Dynamic Elements?</h3><p>Ah, dynamic elements. They're one of the biggest headaches in GUI automation. You know the ones—those buttons or fields where the ID or attributes seem to change every single time the page loads. If you rely on those fragile, auto-generated selectors, you're just signing up for a future of flaky tests.</p><p>The trick is to build <strong>resilient locators</strong>. Forget about that volatile ID. Instead, you need to get a bit more creative and stable with your strategy:</p><ul><li>Can you find the element based on its text? If the button always says "Submit," use that. It's far less likely to change than some random ID.</li><li>Look at what's around it. Use relative selectors like XPath or CSS to anchor the dynamic element to a stable neighbor. Think "the input field to the right of the 'First Name' label."</li><li>Better yet, collaborate with your developers. Ask them to add dedicated test attributes like <code>data-testid</code> to the code. These are put there <em>specifically</em> for automation and almost never change, making your tests rock-solid.</li></ul><h3 id="whats-the-real-difference-between-end-to-end-and-gui-testing">What's the Real Difference Between End-to-End and GUI Testing?</h3><p>It's easy to get these two mixed up, and you'll often hear people use the terms interchangeably. But they're really testing different things.</p><p><strong>GUI testing</strong> is all about the user interface itself. It’s hyper-focused on the visual and interactive parts. You’re answering questions like, "Does this button look right?" or "Can I type text into this form field?" It’s a very specific validation of what the user sees and clicks.</p><p><strong>End-to-end (E2E) testing</strong>, on the other hand, is the whole shebang. It simulates a complete user journey from start to finish. That journey <em>includes</em> clicking around the GUI, but it also goes deeper to verify that all the connected backend services, databases, and APIs are playing nicely together.</p><p>Think of it this way: all E2E tests involve some form of GUI testing, but not all GUI tests are full-blown E2E tests.</p><blockquote>A word of advice: trying to hit <strong>100%</strong> GUI test automation is a trap. It's often a waste of resources for diminishing returns. The smartest teams focus on automating the repetitive, high-risk regression tests. Save your manual testing efforts for exploratory and usability checks where a human's intuition is still king.</blockquote><hr><p>Ready to build a powerful, automated quality gate that stops bad code in its tracks? With <a href="https://mergify.com/?ref=articles.mergify.com"><strong>Mergify</strong></a>, you can set up a smart merge queue that only merges pull requests after all your GUI tests have passed. No more broken code making it to your main branch. <a href="https://mergify.com/?ref=articles.mergify.com">Learn more and see how Mergify can optimize your workflow</a>.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>

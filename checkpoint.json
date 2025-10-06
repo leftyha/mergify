@@ -1,0 +1,1356 @@
+{
+  "lastUrl": "https://docs.mergify.com/configuration/file-format#file-format",
+  "pending": [
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#pull-request-rules",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#merge-protections",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#merge-queue",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#queue-rules",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#priority-rules",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#defaults",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#shared",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#extends",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#json-schema-specification",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#validation-and-troubleshooting",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#validation",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#validate-locally-with-pre-commit",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#troubleshooting",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format#extending-configuration-files",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/sharing#sharing-configuration-sections",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/sharing#extending-configuration-files",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/mergify-configuration-schema.json",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/configuration/file-format/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/actions#overview",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/assign",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/backport",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/close",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/copy",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/comment",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/delete_head_branch",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/dismiss_reviews",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/edit",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/github_actions",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/label",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/merge",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/post_check",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/queue",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/request_reviews",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/review",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/update",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/squash",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/workflow/actions/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/jenkins-cicd-3/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/jenkins-cicd-3/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/tag/basic-knowledge/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/author/hmiramar/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/ci-cd-tools-comparison/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/using-jenkins-to-optimize-your-ci-cd-pipeline/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/github-merge-queue/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://mergify.com/?ref=articles.mergify.com",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/jenkins-cicd-3/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/members/api/announcement/",
+      "meta": {
+        "depth": 3,
+        "reason": "subresource"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://mergify.com/products/ci-insights",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/cicd-jenkins-2/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/cicd-jenkins-2/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/what-is-deployment-automation/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/cicd-jenkins-2/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/jenkins-cicd-2/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/jenkins-cicd-2/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/supercharge-your-jenkins-workflow-with-mergify/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/jenkins-cicd-2/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-fetch-all-branches/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-fetch-all-branches/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-fetch-vs-git-pull/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-overwrite-local-branch-with-remote/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/keep-your-repository-clean--delete-your-merged-branches-/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-fetch-all-branches/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/how-to-actually-use-dora-metrics-in-ci-without-the-bullsh-t/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/how-to-actually-use-dora-metrics-in-ci-without-the-bullsh-t/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/tag/best-practices/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/author/jd/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://mergify.com/product/ci-insights?ref=articles.mergify.com",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/how-to-actually-use-dora-metrics-in-ci-without-the-bullsh-t/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://mergify.com/product/merge-queue?ref=articles.mergify.com",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/1m-pull-requests-per-year-and-not-a-single-broken-ci/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/stop-writing-blind-wrappers-how-to-properly-type-your-python-wrapping-code/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/stop-writing-blind-wrappers-how-to-properly-type-your-python-wrapping-code/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/stop-writing-blind-wrappers-how-to-properly-type-your-python-wrapping-code/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/mergify-2024-recap/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/mergify-2024-recap/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/tag/how-we-do-it/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/integrations/?ref=articles.mergify.com",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://mergify.com/product/merge-protections?ref=articles.mergify.com",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/mergify-2024-recap/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/choosing-a-merge-queue-in-2025-key-features-and-considerations/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/choosing-a-merge-queue-in-2025-key-features-and-considerations/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/choosing-a-merge-queue-in-2025-key-features-and-considerations/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-reset-hard-origin/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-reset-hard-origin/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/using-git-reflog-to-find-a-lost-commit-2/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-reset-hard-origin/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-undo-push/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-undo-push/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-revert-commit-after-push/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-reset-to-remote-head/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-undo-push/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/github-actions-triggers/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/github-actions-triggers/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/github-actions-workflow-dispatch/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/running-github-actions-only-on-certain-pull-requests/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/cutting-costs-with-github-actions-efficient-ci-strategies/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/github-actions-triggers/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/automating-gui-testing/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/automating-gui-testing/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/flaky-test-detection/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/automated-playwright-testing/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/ai-in-automated-testing/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/automating-gui-testing/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/test-environment-management-best-practices/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/test-environment-management-best-practices/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/version-control-git-developers-guide-code-management/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/what-is-infrastructure-monitoring/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/managing-test-environments/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/test-environment-management-best-practices/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/ai-in-automated-testing/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/ai-in-automated-testing/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/automated-user-interface-testing/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/ai-for-devops/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/automation-testing-tool-playwright/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/automated-user-interface-testing/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/automated-user-interface-testing/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/automated-gui-tests/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-merge-commits/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-merge-commits/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/rebase-git-vs-merge/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-merge-branch-into-another/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/resolve-git-merge-conflicts/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-merge-commits/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-diff-ignore-whitespace/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-diff-ignore-whitespace/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-cheat-sheet-2023/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-resolve-conflicts/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-diff-ignore-whitespace/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/github-actions-workflow-dispatch/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/github-actions-workflow-dispatch/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/cicd/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/gitlab-ci-variables-complete-guide-pipeline-configuration/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/how-to-protect-secrets-when-using-github-actions/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/github-code-owners/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/github-code-owners/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/github-branch-protection-what-it-is-and-why-it-matters/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/pull-request-github/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/pull-request-automation/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/github-code-owners/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-undo-commit-keep-changes/#/portal/signin",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/git-undo-commit-keep-changes/#/portal/signup",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://articles.mergify.com/git-undo-commit-keep-changes/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://careers.mergify.com/hiring-process#block-14af2b37c5da807086d5f61fe9545360",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://careers.mergify.com/hiring-process#block-4cb73613f8db423ea960656dd00b2f14",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://careers.mergify.com/hiring-process#block-86fe3380366e424b9a648f7b6980b77e",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://careers.mergify.com/hiring-process#block-161f2b37c5da80839b34e742349f966a",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://careers.mergify.com/hiring-process#block-14af2b37c5da80d791bafc2a8a51d22d",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://careers.mergify.com/hiring-process#block-5f439fa35c714978b4f52fe2a32052e1",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://careers.mergify.com/hiring-process#block-5437df1c2600477fb14e765e00807e51",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/handling-candidate-rejection-a-delicate-balancing-act/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://blog.mergify.com/embracing-remote-work-how-we-built-mergify-as-a-successful-asynchronous-company/",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/uptime#",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/uptime#updates-dropdown-email",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/uptime#updates-dropdown-slack",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/uptime#updates-dropdown-twitter",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/uptime#updates-dropdown-atom",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/uptime#back",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/uptime#forward",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/history#",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/history#updates-dropdown-email",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/history#updates-dropdown-slack",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/history#updates-dropdown-twitter",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/history#updates-dropdown-atom",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/history#back",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://status.mergify.com/history#forward",
+      "meta": {
+        "depth": 3,
+        "reason": "html-discovery"
+      },
+      "score": 0.25
+    },
+    {
+      "url": "https://docs.mergify.com/merge-queue/parallel-checks/#inplace-checks-no-drafts",
+      "meta": {
+        "depth": 4,
+        "reason": "html-discovery"
+      },
+      "score": 0.2
+    }
+  ],
+  "budget": {
+    "pages": 72,
+    "js": 44,
+    "api": 1
+  },
+  "startedAt": "2025-10-06T10:27:51.584Z",
+  "updatedAt": "2025-10-06T10:40:37.570Z"
+}

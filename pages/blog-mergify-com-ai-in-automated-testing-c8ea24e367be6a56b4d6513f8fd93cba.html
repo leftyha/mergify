@@ -1,0 +1,562 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>Unlock Efficiency with ai in automated testing</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Discover how ai in automated testing enhances software quality, saving time and boosting accuracy. Learn how to implement it today!">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/ai-in-automated-testing/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Unlock Efficiency with ai in automated testing">
+    <meta property="og:description" content="Discover how ai in automated testing enhances software quality, saving time and boosting accuracy. Learn how to implement it today!">
+    <meta property="og:url" content="https://articles.mergify.com/ai-in-automated-testing/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg">
+    <meta property="article:published_time" content="2025-09-27T10:02:30.000Z">
+    <meta property="article:modified_time" content="2025-09-27T10:02:33.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Unlock Efficiency with ai in automated testing">
+    <meta name="twitter:description" content="Discover how ai in automated testing enhances software quality, saving time and boosting accuracy. Learn how to implement it today!">
+    <meta name="twitter:url" content="https://articles.mergify.com/ai-in-automated-testing/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "Unlock Efficiency with ai in automated testing",
+    "url": "https://articles.mergify.com/ai-in-automated-testing/",
+    "datePublished": "2025-09-27T10:02:30.000Z",
+    "dateModified": "2025-09-27T10:02:33.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "For years, traditional automated testing has been a bit like a train on a fixed track. It’s incredibly fast and reliable, but the second the landscape changes—even slightly—the whole thing can derail. AI-driven testing, on the other hand, is more like an autonomous vehicle that can see the road ahead and adapt to changes on the fly. It&#x27;s not just about making testing faster; it&#x27;s about making it smarter.\n\n\nThe Next Frontier in Software Quality\n\nWe&#x27;ve all been there. The standard script-based aut",
+    "mainEntityOfPage": "https://articles.mergify.com/ai-in-automated-testing/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="c3613e87-c7cd-4aa9-9b95-4c919a80aab2" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"><div class="gh-announcement-bar dark"><div class="gh-announcement-bar-content"><p dir="ltr"><span>🚀 </span><b><strong>Now GA:</strong></b><span> </span><a href="https://mergify.com/products/ci-insights" rel="noreferrer"><span>CI Insights</span></a><span> helps you spot flaky jobs, cut CI costs, and ship faster. </span><a href="https://dashboard.mergify.com" rel="noreferrer"><span>Try it free</span></a><span>.</span></p></div><button aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16" width="16"><path stroke-linecap="round" stroke-width="0.4" fill="currentColor" stroke="#000000" stroke-linejoin="round" d="M.44,21.44a1.49,1.49,0,0,0,0,2.12,1.5,1.5,0,0,0,2.12,0l9.26-9.26a.25.25,0,0,1,.36,0l9.26,9.26a1.5,1.5,0,0,0,2.12,0,1.49,1.49,0,0,0,0-2.12L14.3,12.18a.25.25,0,0,1,0-.36l9.26-9.26A1.5,1.5,0,0,0,21.44.44L12.18,9.7a.25.25,0,0,1-.36,0L2.56.44A1.5,1.5,0,0,0,.44,2.56L9.7,11.82a.25.25,0,0,1,0,.36Z"></path></svg></button></div></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">Unlock Efficiency with ai in automated testing</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-09-27">27 Sep 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 15 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88f5df28-3be4-42aa-9690-517da4068bfd.jpg" alt="Unlock Efficiency with ai in automated testing">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>For years, traditional automated testing has been a bit like a train on a fixed track. It’s incredibly fast and reliable, but the second the landscape changes—even slightly—the whole thing can derail. AI-driven testing, on the other hand, is more like an autonomous vehicle that can see the road ahead and adapt to changes on the fly. It's not just about making testing faster; it's about making it smarter.</p><h2 id="the-next-frontier-in-software-quality">The Next Frontier in Software Quality</h2><p>We've all been there. The standard script-based automation has served us well, especially for stable applications. But these scripts are notoriously brittle. A tiny UI change, like a developer renaming a button or moving a field, can trigger a domino effect of test failures. Suddenly, your QA team is spending more time fixing broken tests than finding actual bugs in the product. This constant maintenance cycle has become a serious bottleneck in today's fast-paced development world.</p><p>This is exactly the problem AI-driven testing is built to solve. It represents a fundamental shift away from simple "do this, then do that" scripts toward a more intelligent and adaptive approach to quality.</p><blockquote>Think of it this way: a traditional test script is like a printed set of turn-by-turn directions. If a road is closed, you're stuck. An AI-powered test is like a GPS that sees the roadblock, instantly calculates a new route, and still gets you to your destination.</blockquote><p>This guide will serve as your roadmap for navigating this shift. We'll break down the core ideas behind <strong>AI in automated testing</strong>, look at how it's being used today, and explore the real-world business benefits it delivers. My goal is to show you why this isn't just another trend, but a strategic move toward building better software, faster.</p><h3 id="a-market-poised-for-growth">A Market Poised for Growth</h3><p>The industry's hunger for more efficient quality assurance is undeniable. As more and more companies embrace Agile and DevOps, the old way of testing just can't keep up. This has fueled explosive growth in the market. The global automation testing market was valued at around <strong>USD 35.52 billion</strong> and is expected to climb to an incredible <strong>USD 169.33 billion by 2034</strong>. That's a compound annual growth rate (CAGR) of <strong>16.90%</strong>, which clearly signals a massive industry-wide transition. You can <a href="https://www.globenewswire.com/en/news-release/2024/05/20/2884518/0/en/Automation-Testing-Market-Size-Projected-to-Reach-USD-169-33-Billion-by-2034-Growing-at-a-16-90-CAGR-Report-by-Polaris-Market-Research.html?ref=articles.mergify.com">explore more data on automation testing market trends</a>.</p><p>So, what does this actually mean for your team? Throughout this guide, we’ll cover:</p><ul><li><strong>Core Concepts:</strong> How AI actually learns, adapts, and improves testing processes over time.</li><li><strong>Real-World Use Cases:</strong> Concrete examples of how companies are already winning with AI.</li><li><strong>Business Benefits:</strong> The tangible impact on your team's speed, costs, and overall product quality.</li><li><strong>Implementation Best Practices:</strong> A practical look at how to get started without getting overwhelmed.</li></ul><h2 id="how-ai-is-rewriting-the-rules-of-testing">How AI Is Rewriting the Rules of Testing</h2><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/20b775ef-72c1-4625-9878-5aeeaa523510.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p>To really get what <strong>AI in automated testing</strong> means, think about hiring a genius QA teammate who learns on the job. You wouldn't give them a rigid, step-by-step script for every single task. You'd expect them to observe, understand the context, and make smart decisions. That’s the leap from old-school scripts to modern AI systems.</p><p>Traditional automation is pretty brittle. It relies on fixed "locators"—like a CSS ID or an XPath—to find things on a webpage. The moment a developer tweaks an element's ID, that test breaks. AI, on the other hand, understands the application more like a person does. It recognizes a "login button" by its look, position, and purpose, not just its name.</p><h3 id="visual-validation-that-sees-like-a-user">Visual Validation That Sees Like a User</h3><p>One of the first things you'll notice with AI is its knack for advanced <strong>visual testing</strong>. A classic script can check if a button's code <em>exists</em>, but can it tell you if it <em>looks</em> right? AI can. It captures screenshots, compares them against an approved baseline, and flags visual bugs that scripts would completely ignore.</p><p>For instance, an AI tool catches the subtle but frustrating issues that often slip through:</p><ul><li>A button that now overlaps another element, making it impossible to click on smaller screens.</li><li>Text that suddenly appears in the wrong font or color, throwing off the entire design.</li><li>An image that doesn't load, leaving behind an ugly broken icon.</li></ul><p>These are exactly the kinds of problems that drive users crazy but are nearly invisible to purely code-based checks. AI gives you a tireless set of eyes focused on pixel-perfect consistency.</p><h3 id="self-healing-tests-that-adapt-to-change">Self-Healing Tests That Adapt to Change</h3><p>If you've ever worked with test automation, you know the biggest headache is maintenance. In fact, some studies show developers spend up to <strong>50% of their time</strong> just fixing and maintaining tests that break with every minor update. AI tackles this problem head-on with <strong>self-healing tests</strong>.</p><p>Picture this: a developer changes the "Submit" button to "Continue." A traditional script instantly fails because it can't find "Submit." An AI-powered system, however, doesn't panic. It looks at other clues—the button's location, its color, its function in the workflow—and intelligently figures out that "Continue" is the new "Submit." Then it automatically updates the test to reflect the change.</p><blockquote>This self-healing capability turns a test failure into a learning opportunity. The system doesn't just break; it adapts, saving countless hours of manual repair and keeping your CI/CD pipeline from grinding to a halt.</blockquote><h3 id="intelligent-test-creation-from-user-behavior">Intelligent Test Creation from User Behavior</h3><p>The most exciting frontier for AI in testing is <strong>intelligent test generation</strong>. Instead of having engineers manually write every single test case, AI can watch how real people interact with your live application.</p><p>By analyzing user sessions, the AI identifies the most common paths, critical workflows, and even edge cases you hadn't considered. It then uses that data to automatically generate new, highly relevant test scripts. This approach ensures your testing efforts are always focused on what your users <em>actually do</em>, bridging the gap between theoretical test scenarios and real-world behavior.</p><p>So, when a testing tool claims to be "AI-powered," what does that really mean for your day-to-day work? It's less about a far-off sci-fi concept and more about practical, intelligent features designed to solve the biggest headaches in traditional automation. These are the capabilities that make smarter, faster quality assurance a reality.</p><p>At its heart, <strong>AI in automated testing</strong> isn't about replacing human testers. It's about augmenting them. Instead of just blindly following a script, these tools can observe, adapt, and even reason, turning rote, manual work into a background process. This lets your QA team graduate from being script mechanics to true quality strategists.</p><p>Let's dive into what these platforms can actually do.</p><h3 id="autonomous-test-creation">Autonomous Test Creation</h3><p>One of the most impressive features is <strong>autonomous test creation</strong>. Think of an AI model behaving like a curious new user clicking around your application for the first time. It explores every nook and cranny—pushing buttons, trying out forms, and navigating from screen to screen to map out all the possible user journeys.</p><p>From that initial exploration, the AI automatically generates a whole suite of test cases. It identifies the most critical workflows on its own, often uncovering user paths your team might have overlooked. This isn't just a minor speed bump; it can shrink the time needed to build a solid regression suite from weeks down to a matter of hours.</p><h3 id="smart-test-maintenance-and-self-healing">Smart Test Maintenance and Self-Healing</h3><p>We all know the pain of brittle tests. A minor UI tweak breaks a dozen scripts, and suddenly your whole afternoon is gone. This is where AI-driven <strong>smart maintenance</strong> comes in. When a test fails, the AI doesn't just throw up its hands and report an error—it investigates.</p><p>Using machine learning, it can tell the difference between a real bug and a superficial change.</p><blockquote>For instance, if a developer changes a button's label from "Submit" to "Continue," or alters its color or CSS ID, traditional scripts would break. An AI, however, understands the element's context and function. It recognizes it as the same button and automatically updates the test script to match. This "self-healing" capability is a lifesaver, keeping false alarms out of your CI/CD pipeline and freeing up your engineers from the endless cycle of script repair.</blockquote><p>The differences between old and new methods become stark when you compare them side-by-side.</p><h3 id="traditional-vs-ai-powered-automated-testing">Traditional vs AI-Powered Automated Testing</h3><p>To really grasp the shift, let's compare the two approaches directly. The following table breaks down how AI changes the game across several key aspects of the testing lifecycle.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Aspect</th>
+<th align="left">Traditional Automated Testing</th>
+<th align="left">AI-Powered Automated Testing</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Test Creation</strong></td>
+<td align="left">Manual script writing; time-consuming and requires coding expertise.</td>
+<td align="left">Autonomous discovery and generation of test cases based on app exploration.</td>
+</tr>
+<tr>
+<td align="left"><strong>Maintenance</strong></td>
+<td align="left">Brittle; requires constant manual updates for UI or element changes.</td>
+<td align="left">Self-healing tests that automatically adapt to changes, reducing maintenance.</td>
+</tr>
+<tr>
+<td align="left"><strong>Resilience</strong></td>
+<td align="left">Highly dependent on specific locators (ID, XPath) that break easily.</td>
+<td align="left">Understands the UI contextually, not just by locators, making tests robust.</td>
+</tr>
+<tr>
+<td align="left"><strong>Coverage</strong></td>
+<td align="left">Limited by the number of test cases that can be manually written and maintained.</td>
+<td align="left">Can generate comprehensive test suites covering more user paths automatically.</td>
+</tr>
+<tr>
+<td align="left"><strong>Analysis</strong></td>
+<td align="left">Provides simple pass/fail logs, requiring manual debugging to find the root cause.</td>
+<td align="left">Offers detailed root cause analysis, pinpointing the source of failures.</td>
+</tr>
+<tr>
+<td align="left"><strong>Skill Requirement</strong></td>
+<td align="left">Requires specialized test automation engineers to write and maintain scripts.</td>
+<td align="left">Low-code/no-code interfaces make it accessible to a broader range of team members.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>As you can see, the move to AI isn't just an incremental improvement; it fundamentally redefines what's possible in automated testing.</p><p>This infographic really drives the point home, showing just how much of an impact these AI capabilities can have on performance.</p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/25b35ca7-f778-4fec-af86-2dd0db3bec50.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p>The numbers speak for themselves. With AI-driven methods, teams are seeing test execution times drop by up to <strong>80%</strong>. At the same time, they're catching more defects and achieving much broader test coverage.</p><h3 id="advanced-root-cause-analysis">Advanced Root Cause Analysis</h3><p>Finding a bug is just the first step. The real work is figuring out <em>why</em> it happened. This is another area where AI shines, offering <strong>advanced root cause analysis</strong>.</p><p>When a test run is finished, you get more than a simple pass/fail report. The AI digs deep into the data, analyzing everything from application logs and browser console errors to network requests.</p><p>Instead of a vague message like "Checkout test failed," you get a specific, actionable insight: "The checkout test failed because the payment API responded with a 503 error, which correlates with a database connection timeout recorded in the server logs." This level of detail transforms hours of painful debugging into minutes of focused problem-solving. It's these core abilities—creating tests on its own, fixing them when they break, and explaining why they failed—that truly make <strong>AI in automated testing</strong> such a powerful shift for engineering teams.</p><h2 id="putting-ai-testing-to-work-in-the-real-world">Putting AI Testing to Work in the Real World</h2><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/c4dd0833-cb4e-4c58-9617-4c63a0023165.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p>It's one thing to talk about the theory, but what really matters is how <strong>AI in automated testing</strong> holds up in the trenches. The good news is that companies are already seeing real, measurable results from putting these smart tools to work.</p><p>We’re not just talking about small efficiency gains here. We’re seeing fundamental shifts in how teams approach quality. Let’s walk through three different scenarios where AI is making a huge impact.</p><h3 id="flawless-launches-in-e-commerce">Flawless Launches in E-Commerce</h3><p>Picture a big e-commerce brand gearing up for Black Friday. A smooth user experience is absolutely critical. But with countless combinations of devices and browsers, manually checking every little visual detail is a practical impossibility. This is where AI-powered visual testing really shines.</p><p>Instead of just running scripts that confirm a button <em>works</em>, the company uses an AI that actually <em>looks</em> at every page for visual bugs. It's an extra set of eyes that catches the kinds of embarrassing issues that old-school tests would completely miss:</p><ul><li>Promotional banner text that overlaps and becomes unreadable.</li><li>Buttons that look fine on a desktop but are misaligned on a specific iPhone model.</li><li>Product images that appear as broken links instead of loading properly.</li></ul><p>By catching these customer-facing glitches before they go live, the AI ensures every shopper gets a polished, professional experience. For a closer look at this topic, our guide on <a href="https://articles.mergify.com/automated-user-interface-testing/">automated user interface testing</a> goes into much more detail. Ultimately, this protects both revenue and brand reputation when it matters most.</p><h3 id="bulletproof-security-in-fintech">Bulletproof Security in Fintech</h3><p>In the fintech world, the stakes couldn't be higher. Security testing has to be airtight, but manually creating enough realistic and complex transaction data to find every single vulnerability is a monumental task. This is a perfect job for AI-driven test data generation.</p><p>A fintech firm can use an AI model trained on patterns from anonymized production data. From that, the AI can generate millions of synthetic but completely plausible user profiles and transaction histories. This lets the team simulate sophisticated fraud scenarios and stress-test their systems in ways that would be far too time-consuming to dream up by hand.</p><blockquote>The result is a much stronger security posture. By taking over the creation of high-quality test data, the AI helps uncover subtle vulnerabilities that simpler, manually created data would never expose.</blockquote><h3 id="stability-and-speed-for-saas-platforms">Stability and Speed for SaaS Platforms</h3><p>Consider a fast-growing SaaS company that pushes out new code several times a day. Their biggest headache? A regression test suite that's constantly breaking. As the UI evolves, their test scripts become a maintenance nightmare, which slows down the entire release cycle.</p><p>To solve this, they brought in a testing platform with <strong>self-healing capabilities</strong>. Now, when a developer changes a button’s ID or restructures a component, the AI understands the intent behind the change. Instead of just failing the test and creating another ticket, it intelligently updates the script’s locators on the fly. This one feature had a massive effect, cutting down their test maintenance effort by over <strong>70%</strong>. Their CI/CD pipeline stays green, and developers can ship code confidently, knowing the tests will adapt instead of breaking.</p><h2 id="the-strategic-business-value-of-smarter-testing">The Strategic Business Value of Smarter Testing</h2><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/77c88a4b-ed97-44e3-a0ea-f8dfed3a7ce9.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p>While the tech side of <strong>AI in automated testing</strong> gets a lot of attention, the real story is what it does for the business's bottom line. Bringing AI into your testing process isn't just an engineering upgrade; it's a financial strategy that turns your QA department from a cost center into a genuine source of value.</p><p>This shift lets QA teams break free from the endless cycle of writing and fixing test scripts. Instead of just being script mechanics, they can step into a more strategic role. This frees them up to focus on high-impact work like exploratory testing, deep usability analysis, and really digging into the end-user experience—the kind of work that actually makes the product better and keeps customers happy.</p><h3 id="accelerating-speed-to-market">Accelerating Speed to Market</h3><p>One of the biggest wins you'll see right away is how much faster you can ship. AI tackles the biggest bottlenecks in traditional testing head-on. By automating test creation and using self-healing to handle maintenance, development teams can finally hit the accelerator.</p><p>This newfound speed gives you a serious competitive edge. Faster feedback loops mean bugs get squashed earlier in the process, which cuts down development costs. More importantly, it means you can get new features into your customers' hands long before your competitors do.</p><h3 id="enhancing-quality-and-coverage">Enhancing Quality and Coverage</h3><p>AI-powered testing tools don't just move faster; they're also smarter. They can explore an application on their own, generating tests that cover way more ground than any manual effort possibly could. This broader, deeper coverage means fewer bugs make it into production.</p><blockquote>The result is a higher-quality product that builds customer trust and reduces churn. When users encounter fewer issues, satisfaction and retention rates improve, which is crucial for long-term business success.</blockquote><p>This isn't some far-off future, either. Big companies are already using AI-driven testing solutions, and many others are experimenting with AI models to get their QA workflows dialed in. AI is changing software testing from a final gatekeeper into a continuous, intelligent process that fuels faster releases and better software.</p><h3 id="driving-down-operational-costs">Driving Down Operational Costs</h3><p>Finally, let's talk about the direct impact on your budget. The time your team spends on test maintenance is a huge, often hidden, operational cost. By automating the repair of broken tests, AI slashes the hours your engineers waste on tedious, low-value tasks.</p><p>Think about the savings here:</p><ul><li><strong>Reduced Maintenance:</strong> Drastically cuts the hours spent fixing brittle and outdated test scripts.</li><li><strong>Faster Debugging:</strong> AI-powered root cause analysis helps developers pinpoint and fix bugs in a fraction of the time.</li><li><strong>Optimized Resources:</strong> Frees up your most skilled engineers to focus on innovation instead of repetitive grunt work.</li></ul><p>This combination of speed, quality, and cost-efficiency makes a compelling business case. To learn more about how AI supports these goals, see our article on <a href="https://articles.mergify.com/ai-for-devops/">the role of AI for DevOps</a>. Investing in smarter testing isn't just about finding more bugs; it's about building a more agile, efficient, and profitable organization.</p><h2 id="a-practical-roadmap-for-implementing-ai-testing">A Practical Roadmap for Implementing AI Testing</h2><p>Bringing any new technology into your workflow takes a solid plan, and integrating <strong>AI in automated testing</strong> is certainly no exception. If you just dive in headfirst without a clear strategy, you're setting yourself up for confusion and a lot of wasted effort. The trick is to start small, prove the value, and then scale up intelligently.</p><p>Right off the bat, teams often run into a bit of a learning curve. Even though many AI tools are built to be user-friendly, your team still needs time to get comfortable with what the tool can do and figure out how to fit it into their daily routine. Another huge factor is data quality. AI models are only as good as the data they learn from, so having clean, relevant data is non-negotiable for getting accurate test results.</p><p>Finally, you can't forget about how it all plugs into your existing setup. If the AI tool doesn't play nice with your CI/CD pipeline, you’ll create more problems than you solve.</p><h3 id="getting-started-the-right-way">Getting Started The Right Way</h3><p>For a smooth transition, think evolution, not revolution. Don't try to rip and replace everything at once. Instead, start by pinpointing your single biggest testing headache. Are flaky tests driving everyone crazy? Is writing new tests taking forever? Or is your visual testing just not catching enough bugs? Nailing down that one specific problem will help you pick the right tool for that exact job.</p><p>Once you have a target, follow these simple steps:</p><ol><li><strong>Run a Pilot Project:</strong> Choose a small, low-risk part of your application and try out an AI testing tool there. This gives your team a safe space to learn without the pressure of a major release, and it lets you prove the tool's worth on a manageable scale.</li><li><strong>Pick Tools That Match Your Team's Skills:</strong> Look at tools through the lens of your current team. Some platforms are completely codeless, which is great for manual QAs looking to get into automation. Others are built for seasoned engineers who want to dig in and customize everything. For a deeper dive, check out our <a href="https://articles.mergify.com/automation-testing-tool-playwright/">guide to modern automation testing tools like Playwright</a>.</li><li><strong>Define What Success Looks Like:</strong> Before you even start the pilot, decide how you'll measure success. Are you trying to cut down test maintenance time by <strong>25%</strong>? Or maybe boost your test coverage by <strong>15%</strong>? Having concrete goals makes it easy to see the actual impact and justify the investment later.</li></ol><p>Generative AI is making this process even more powerful by autonomously creating test cases and mimicking complex user journeys. It's no wonder the generative AI in testing market is expected to rocket from <strong>USD 48.9 million</strong> to <strong>USD 351.4 million</strong> by 2034. You can <a href="https://market.us/report/generative-ai-in-testing-market/?ref=articles.mergify.com">discover more insights about the generative AI testing market</a> to see where things are headed.</p><blockquote>A successful implementation isn’t about replacing your entire testing framework overnight. It's about strategically applying AI to solve specific problems and demonstrating tangible wins, building momentum one step at a time.</blockquote><h2 id="answering-your-questions-about-ai-in-testing">Answering Your Questions About AI in Testing</h2><p>As teams start exploring <strong>AI in automated testing</strong>, a few key questions always come up. People naturally want to know how it will affect their jobs, which tools are worth looking into, and what all the technical jargon really means. Let's tackle those common questions head-on.</p><h3 id="will-ai-replace-human-qa-engineers">Will AI Replace Human QA Engineers?</h3><p>No, not at all. The goal of AI isn't to replace QA engineers but to make them more effective. Think of it as a force multiplier.</p><p>AI is fantastic at handling the tedious, repetitive tasks that bog down human testers—like running thousands of regression tests or spotting tiny visual glitches across different browsers. By offloading that work, it frees up your team's experts to focus on what humans do best: creative, strategic, and intuitive testing.</p><p>Instead of just writing and fixing scripts, QA engineers can now dive deeper into exploratory testing, analyze user experience, and contribute to product strategy. The role simply shifts from a script maintainer to a quality strategist, with AI serving as a powerful assistant.</p><h3 id="how-do-we-choose-the-right-ai-testing-tool">How Do We Choose the Right AI Testing Tool?</h3><p>It's easy to get lost in a sea of features. The best way to start is by pinpointing your biggest headache. Are flaky tests constantly breaking your builds? Is test creation taking forever? Or is UI validation a constant struggle? Find the tools that are laser-focused on solving <em>that</em> problem first.</p><p>Next, think about your team. Do you have manual testers who would benefit from a codeless platform? Or are your engineers looking for something they can customize and extend with code? Your team's existing skill set should guide your choice.</p><p>Finally, any tool you choose must play nicely with your current CI/CD pipeline. Before you go all-in, run a small pilot project. There's no better way to see how a tool <em>really</em> performs than by testing it in your own environment.</p><blockquote>The best tool isn't the one with the most features; it's the one that solves your team's most pressing problem most effectively.</blockquote><h3 id="what-is-the-difference-between-ai-and-ml-in-testing">What Is the Difference Between AI and ML in Testing?</h3><p>It's easy to use these terms interchangeably, but there's a simple way to think about them. <strong>Artificial Intelligence (AI)</strong> is the broad concept of creating smart systems that can perform tasks that typically require human intelligence. <strong>Machine Learning (ML)</strong> is the engine that makes much of that possible.</p><p>Think of it this way: AI is the goal—to make testing smarter. ML is how we get there.</p><p>For instance, an ML algorithm can analyze past test runs and code commits to predict which areas are most at risk for new bugs. That's a form of predictive analytics powered by ML. Another ML model can visually learn your app's layout, allowing it to automatically fix broken tests when a button's location or label changes. That's the magic behind self-healing tests.</p><p>In short, ML gives the system the ability to learn from data, which is what makes AI-powered testing so intelligent and adaptive.</p><hr><p>Ready to make your CI/CD pipeline smarter and more efficient? <strong>Mergify</strong> uses intelligent automation to reduce CI costs, secure your code, and eliminate merge conflicts. <a href="https://mergify.com/?ref=articles.mergify.com">See how Mergify can help your team ship faster and more reliably</a>.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>

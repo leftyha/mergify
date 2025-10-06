@@ -1,0 +1,545 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>A Developer's Guide to Git Undo Push Safely</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="Made a mistake? Learn how to safely git undo push with real-world examples using git revert and git reset. Protect your repo and keep your team happy.">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/git-undo-push/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A Developer's Guide to Git Undo Push Safely">
+    <meta property="og:description" content="Made a mistake? Learn how to safely git undo push with real-world examples using git revert and git reset. Protect your repo and keep your team happy.">
+    <meta property="og:url" content="https://articles.mergify.com/git-undo-push/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg">
+    <meta property="article:published_time" content="2025-10-01T09:48:16.000Z">
+    <meta property="article:modified_time" content="2025-10-01T09:48:20.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="A Developer's Guide to Git Undo Push Safely">
+    <meta name="twitter:description" content="Made a mistake? Learn how to safely git undo push with real-world examples using git revert and git reset. Protect your repo and keep your team happy.">
+    <meta name="twitter:url" content="https://articles.mergify.com/git-undo-push/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "A Developer&#x27;s Guide to Git Undo Push Safely",
+    "url": "https://articles.mergify.com/git-undo-push/",
+    "datePublished": "2025-10-01T09:48:16.000Z",
+    "dateModified": "2025-10-01T09:48:20.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "We&#x27;ve all been there. That sinking feeling in your stomach the moment you realize you&#x27;ve pushed a bad commit. Maybe it&#x27;s a bug, a half-baked feature, or worse, sensitive data. Your first instinct is probably to panic. Don&#x27;t.\n\nWhile a hasty fix can make things much worse for your team, this is a super common scenario and, thankfully, very fixable.\n\n\nChoosing Your Undo Method Revert vs Reset\n\nThe right way to undo a push boils down to one simple question: has anyone else pulled your changes?\n\nAnsw",
+    "mainEntityOfPage": "https://articles.mergify.com/git-undo-push/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="65e5af6d-c170-49c5-bedd-2035dfcc6201" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"><div class="gh-announcement-bar dark"><div class="gh-announcement-bar-content"><p dir="ltr"><span>🚀 </span><b><strong>Now GA:</strong></b><span> </span><a href="https://mergify.com/products/ci-insights" rel="noreferrer"><span>CI Insights</span></a><span> helps you spot flaky jobs, cut CI costs, and ship faster. </span><a href="https://dashboard.mergify.com" rel="noreferrer"><span>Try it free</span></a><span>.</span></p></div><button aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16" width="16"><path stroke-linecap="round" stroke-width="0.4" fill="currentColor" stroke="#000000" stroke-linejoin="round" d="M.44,21.44a1.49,1.49,0,0,0,0,2.12,1.5,1.5,0,0,0,2.12,0l9.26-9.26a.25.25,0,0,1,.36,0l9.26,9.26a1.5,1.5,0,0,0,2.12,0,1.49,1.49,0,0,0,0-2.12L14.3,12.18a.25.25,0,0,1,0-.36l9.26-9.26A1.5,1.5,0,0,0,21.44.44L12.18,9.7a.25.25,0,0,1-.36,0L2.56.44A1.5,1.5,0,0,0,.44,2.56L9.7,11.82a.25.25,0,0,1,0,.36Z"></path></svg></button></div></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">A Developer's Guide to Git Undo Push Safely</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-10-01">01 Oct 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 13 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-fe87227c-2ee6-49d0-87d7-e884fe0dea90.jpg" alt="A Developer's Guide to Git Undo Push Safely">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>We've all been there. That sinking feeling in your stomach the moment you realize you've pushed a bad commit. Maybe it's a bug, a half-baked feature, or worse, sensitive data. Your first instinct is probably to panic. Don't.</p><p>While a hasty fix can make things much worse for your team, this is a super common scenario and, thankfully, very fixable.</p><h2 id="choosing-your-undo-method-revert-vs-reset">Choosing Your Undo Method Revert vs Reset</h2><p>The right way to undo a push boils down to one simple question: <strong>has anyone else pulled your changes?</strong></p><p>Answering that determines whether you need a non-destructive fix that plays nice with others, or a destructive one that rewrites history.</p><ul><li><strong>Non-destructive (<code>git revert</code>):</strong> This is your go-to for any public or shared branch. It works by creating a <em>brand new</em> commit that is the exact opposite of the one you want to undo. It’s clean, safe, and doesn't mess with the project's history.</li><li><strong>Destructive (<code>git reset</code>):</strong> This is the "it never happened" approach. <code>git reset</code> actually moves the branch pointer back to a previous commit, erasing the bad one from the timeline. It's powerful, but it’s a huge no-no on shared branches.</li></ul><p>This decision is critical for team collaboration. Messing with the history of a branch others are working on is a recipe for disaster.</p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/212c21ad-0a89-4eb2-ac54-c615b4b4dccd.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p>The main takeaway here? When you're working with others, you have to preserve a clean and consistent project history. That makes <code>git revert</code> the right choice almost every time.</p><p>To make it even clearer, here’s a quick breakdown to help you decide at a glance.</p><h3 id="choosing-your-undo-method-revert-vs-reset-1">Choosing Your Undo Method Revert vs Reset</h3>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Method</th>
+<th align="left">Effect on History</th>
+<th align="left">Best For</th>
+<th align="left">Safety Level</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><code>git revert</code></strong></td>
+<td align="left">Creates a new commit that undoes the changes. History remains intact and linear.</td>
+<td align="left">Shared branches (e.g., <code>main</code>, <code>develop</code>) where others have pulled changes.</td>
+<td align="left"><strong>High.</strong> It's the standard, safe way to undo changes in a collaborative environment.</td>
+</tr>
+<tr>
+<td align="left"><strong><code>git reset</code></strong></td>
+<td align="left">Moves the branch pointer, effectively erasing commits. This rewrites the project history.</td>
+<td align="left">Private or local branches where you are the only one working on them.</td>
+<td align="left"><strong>Low.</strong> Extremely risky on shared branches, as it causes history divergence for teammates.</td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>This table should be your quick reference. When in doubt, always default to the safer option.</p><h3 id="why-reverting-is-the-default-safe-choice">Why Reverting Is The Default Safe Choice</h3><p>When you’re working on a public repository, rewriting history can cause chaos. That's why <code>git revert</code> is the gold standard. It creates a new commit that simply negates the changes from the bad one. The original commit is still there, but its effects are canceled out.</p><p>This approach became the norm as collaborative platforms like <a href="https://github.com/?ref=articles.mergify.com">GitHub</a> took off and millions of developers started working together on open-source projects. You can find more detailed examples on how to undo pushed commits with Git on GeeksforGeeks.</p><blockquote>A <strong>revert</strong> is like an apology in your project's history. It says, "Oops, I made a mistake here," and then adds another entry showing how you fixed it. A <strong>reset</strong> tries to pretend the mistake was never made, which just confuses everyone who already saw it happen.</blockquote><p>When you're working on a team, keeping the project history clean and understandable is everything. This is exactly why <code>git revert</code> is the go-to command for undoing a commit that's already been pushed. It's the professional standard.</p><p>Unlike other commands that rewrite history (we're looking at you, <code>git reset</code>), <code>git revert</code> takes a much safer, more transparent route.</p><p>Instead of just pretending a bad commit never happened, <code>git revert</code> creates a brand <em>new</em> commit that does the exact opposite of the one you want to undo. It's like finding a mistake in an accounting ledger; you don't erase the error. You add a new transaction that corrects the balance. This keeps the entire history intact, giving you a clear, auditable trail of what happened and when.</p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/09dcd88b-1320-469f-9709-1b0427b299c1.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p>This approach is mission-critical. Why? Because it avoids the absolute chaos that happens when you rewrite the history of a branch that your teammates have already pulled down. A forced push after a <code>git reset</code> creates divergent histories, leaving everyone else on your team with confusing, painful merges to sort out.</p><h3 id="finding-and-reverting-the-problem-commit">Finding and Reverting The Problem Commit</h3><p>Let’s walk through a scenario I've seen a hundred times: you've just pushed a commit, and a minute later, you realize it completely breaks the build. The CI/CD pipeline is screaming red alerts, and you need to fix it—fast—without tripping up anyone else.</p><p>First thing's first: you need to find the commit hash of the troublemaker. The easiest way is to peek at the recent project history using <code>git log</code>.</p><p>git log --oneline -n 5</p><p>This handy command gives you a quick, clean list of the last <strong>5</strong> commits. Once you spot the one that's causing the problem, copy its unique commit hash (that short string of letters and numbers). Let's say the bad commit is <code>a1b2c3d</code>.</p><p>With the hash in hand, the revert itself is dead simple.</p><p>git revert a1b2c3d</p><p>Git will then pop open your default text editor, asking you to write a commit message for this <em>new</em> revert commit. It'll suggest something like, "Revert 'Fix user login button styling'".</p><blockquote>It's a best practice to add your own context to this default message. Briefly explain <strong>why</strong> the commit is being reverted. A clear message like "Reverting this commit because it broke the user authentication flow on mobile devices" is incredibly helpful for future developers.</blockquote><p>Once you save the message and close the editor, Git creates the new commit. All that's left is to push it up to the remote repository.</p><p>git push origin main</p><p>And just like that, the problematic changes are reversed on the remote branch, the build goes green again, and your team's history remains consistent and conflict-free. This whole process is transparent and safe for everyone involved. For a deeper look at this command, our guide on how to <a href="https://articles.mergify.com/git-revert-commit-after-push/">revert a Git commit after a push</a> has even more examples.</p><h3 id="the-benefits-of-a-linear-history">The Benefits of a Linear History</h3><p>Using <code>git revert</code> ensures your project's history stays as a single, linear timeline of events. This is something highly valued in professional dev shops for a few key reasons:</p><ul><li><strong>Auditability:</strong> Every single change, including the corrections, is documented. This is invaluable for code reviews, bug hunting, and just understanding how the codebase has evolved over time.</li><li><strong>Safety:</strong> You completely sidestep the danger of overwriting a teammate's work or forcing them into a nightmare of complex rebase operations to fix a divergent history.</li><li><strong>Simplicity:</strong> Your teammates can just <code>git pull</code> the latest changes and keep working. No one has to perform any complicated local repository surgery.</li></ul><p>By choosing <code>git revert</code>, you're not just fixing a bug. You're being a good teammate and upholding a collaborative workflow that respects everyone's time and effort. It is the definitive safe way to <code>git undo push</code> in a shared environment.</p><h2 id="when-to-reach-for-the-powerful-git-reset-command">When to Reach for the Powerful Git Reset Command</h2><p>While <code>git revert</code> is the professional standard for anything on a shared branch, sometimes you just need a commit to completely disappear. This is where <code>git reset</code> comes into play. Think of it like a chainsaw—incredibly effective in the right hands, but an absolute disaster if you don't know what you're doing.</p><p>The golden rule here is simple: <strong>only ever use <code>git reset</code> on branches that you have not shared with other people.</strong></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/d5d76c30-18a3-4fc0-9847-f616d1ef708a.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p>Imagine you're deep into a new feature on your own private branch. You've made a few commits, maybe even pushed them to your remote backup, and then you realize the last commit was a total mistake. Since nobody else has pulled this branch, you can safely rewrite its history without throwing your team's work into chaos.</p><h3 id="understanding-the-different-reset-modes">Understanding the Different Reset Modes</h3><p>Not all resets are the same. Git gives you three main modes—<code>--soft</code>, <code>--mixed</code>, and <code>--hard</code>—each dictating what happens to your files after the history is rewritten. They range from least to most destructive.</p><ul><li><code><strong>--soft</strong></code>: This mode just moves the <code>HEAD</code> pointer back to an earlier commit. It leaves both your staged changes and your working directory completely untouched. It’s perfect when you want to bundle your work differently, like squashing a few small commits into a single, more meaningful one.</li><li><code><strong>--mixed</strong></code>: This is the default setting for <code>git reset</code>. It moves <code>HEAD</code> and also resets the staging area (the index), but it leaves your actual working files alone. The changes from the commits you just undid will now show up as unstaged modifications.</li><li><code><strong>--hard</strong></code>: Here’s the most powerful—and dangerous—option. This mode moves <code>HEAD</code>, clears the staging area, and completely overwrites your working directory to match the commit you're resetting to. <strong>Be warned: any uncommitted changes will be gone for good.</strong></li></ul><p>For undoing a pushed commit on a private branch, <code>git reset --hard</code> is usually the most direct route. It cleanly wipes the commit and its changes from your local repository. If you're dealing with more complex scenarios, you can learn more about how to <a href="https://articles.mergify.com/git-reset-to-remote-head/">reset your branch to the remote HEAD</a>.</p><h3 id="the-safer-way-to-force-push">The Safer Way to Force Push</h3><p>After you run a <code>git reset --hard</code>, your local branch's history is now out of sync with the remote. You'll need to force push to get them aligned. But just running <code>git push --force</code> is a risky move. It blindly overwrites the remote branch. If a teammate somehow pushed a change in the seconds before you did, you'd wipe out their work without a single warning.</p><p>A much, much safer way to do this is with <code>git push --force-with-lease</code>.</p><blockquote><code>git push --force-with-lease</code> is a protective command. It first checks if the remote branch has been updated by someone else since you last fetched it. If it has, the push gets rejected, saving you from accidentally bulldozing a colleague's contributions.</blockquote><p>So, let's say you want to get rid of that very last commit you pushed. The process looks like this:</p><ol><li>First, remove the commit from your local history: <code>git reset --hard HEAD~1</code></li><li>Then, safely force push your updated history: <code>git push --force-with-lease</code></li></ol><p>This one-two punch is the cleanest, most responsible way to handle a <code>git undo push</code> on your private branches. You get the pristine history you want without the high risk of disrupting your team.</p><p>Still, the danger of misusing force pushes is very real. A 2022 GitLab survey found that about <strong>38% of Git users</strong> have run into problems from overwriting pushed commits. Worse, <strong>75% of those incidents</strong> led to major merge conflicts and project downtime. It's a stark reminder of why using commands like <code>--force-with-lease</code> and setting up branch protection rules is so critical for any team.</p><p>Oh, the cold sweat moment. You've just pushed a commit and see it plain as day: an API key, a password, some other secret staring back at you from the remote repo. This isn't just a mistake; it's a full-blown "drop everything" security incident.</p><p>Let’s be crystal clear: <code>git revert</code> or <code>git reset</code> will not save you here. Those commands are like putting a band-aid on a broken leg. They only affect the <em>tip</em> of your branch, leaving the sensitive data buried deep in the commit history, a ticking time bomb for anyone who knows where to look.</p><p>This is a code red. It calls for a much more radical solution: rewriting the repository's history to surgically remove every trace of that sensitive data. Standard Git commands aren't built for this kind of operation. You need to bring in the big guns.</p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/15549233-22c8-479f-8125-1ffa92089caf.jpg" class="kg-image" alt="Image" loading="lazy"></figure><h3 id="the-right-tools-for-history-rewriting">The Right Tools for History Rewriting</h3><p>For a critical task like this, a couple of powerful utilities are the go-to choices in the development community. They're designed specifically to scan and scrub your entire project history.</p><ul><li><strong>BFG Repo-Cleaner</strong>: A fast and straightforward tool written in Scala. BFG is fantastic at removing chunky files and, more importantly for us, passwords or other text strings. You just tell it what to find, and it obliterates it from your Git history.</li><li><code><strong>git filter-repo</strong></code>: This is the modern, officially recommended successor to the old <code>git filter-branch</code>. It’s incredibly powerful and flexible, letting you rewrite history in all sorts of complex ways, including scrubbing specific files or text.</li></ul><p>Be warned: using these tools is a major move. When you rewrite history, you're changing the commit hashes for the affected commits and <em>every single one that came after them</em>. This creates a massive ripple effect, potentially breaking CI pipelines, automation, and any audit trails that depend on those original commit IDs.</p><blockquote>This cleanup isn't a solo mission. It's an emergency response that demands immediate and clear communication with your entire team. Everyone has to be on the same page to coordinate the cleanup and—crucially—prevent someone from accidentally pushing the compromised history right back into the repo.</blockquote><h3 id="your-emergency-response-plan">Your Emergency Response Plan</h3><p>The moment you spot exposed data, the clock starts ticking. You need a clear, actionable plan to contain the damage and sterilize the repository.</p><ol><li><strong>Invalidate the Credentials. Now.</strong> Before you even type <code>git</code>, your absolute first step is to revoke the leaked key, change the password, or disable the credential. Assume it's already been compromised. Don't wait.</li><li><strong>Alert the Team.</strong> Tell everyone what happened. They need to stop all work, especially pushing new commits, until the repository is clean. This prevents them from re-introducing the sensitive data from their local copies.</li><li><strong>Rewrite History.</strong> Use a tool like BFG or <code>git filter-repo</code> on a fresh clone of the repository to scrub the data. Follow the documentation for your chosen tool <em>to the letter</em>.</li><li><strong>Force Push the Clean History.</strong> Once you've double-checked that the data is gone, you’ll have to force push the rewritten history to all branches on the remote. This overwrites the old, dirty history. Yes, it's a <code>push --force</code>.</li><li><strong>Coordinate with Teammates.</strong> Instruct everyone to fetch the new, clean history and rebase any local work they have. They must <strong>not</strong> merge their old local branches; doing so could re-contaminate the entire repository.</li></ol><p>It’s a disruptive process, but absolutely necessary. Security teams will tell you the risk of re-contamination is incredibly high if just one developer pushes an old local copy. Despite the hassle, as of mid-2024, nearly <strong>20% of enterprise repositories</strong> with documented data leaks have had to perform a full history rewrite. You can find more detailed guidance on removing sensitive data in <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository?ref=articles.mergify.com">GitHub's official documentation</a>.</p><p>Look, knowing the right <code>git</code> commands to undo a push is only half the battle. Git is fundamentally a collaboration tool, and if you're not communicating, you're creating chaos for everyone else.</p><p>The second you force push or revert something on a shared branch, your next move shouldn't be in the terminal. It should be in your team's Slack or Teams channel.</p><p>A quick heads-up like, "Hey team, just reverted commit <code>b4d451a</code> on <code>develop</code> because it was breaking the build," saves everyone a massive headache. It stops your teammates from pulling down the bad code and building their new work on top of a broken foundation.</p><h3 id="lock-it-down-with-protected-branches">Lock It Down with Protected Branches</h3><p>Of course, the best way to fix a bad push is to stop it from ever happening. That's exactly what protected branches are for. On platforms like <a href="https://github.com/?ref=articles.mergify.com">GitHub</a> and <a href="https://about.gitlab.com/?ref=articles.mergify.com">GitLab</a>, you can set up rules for your most important branches, like <code>main</code> or <code>develop</code>.</p><p>It’s a game-changer. You can set up protections to:</p><ul><li><strong>Block force pushes entirely:</strong> This is your silver bullet. It makes accidentally rewriting history on a shared branch impossible.</li><li><strong>Require pull request reviews:</strong> Make sure at least one other person lays eyes on the code before it gets merged.</li><li><strong>Mandate passing status checks:</strong> Don't even think about merging if the automated tests and CI checks haven't passed.</li></ul><p>Setting up branch protection is the single most effective proactive step you can take. It hardens your repository against the most common (and costly) human errors. What could have been a fire drill becomes a non-event.</p><blockquote>Think of branch protection as the guardrails on a highway. It doesn't stop you from driving, but it does an excellent job of preventing you from accidentally veering off a cliff. It's a simple, powerful safety feature.</blockquote><h3 id="build-better-team-habits">Build Better Team Habits</h3><p>Beyond the technical guardrails, your team's day-to-day habits are your best line of defense.</p><p>Working in <strong>feature branches</strong> should be non-negotiable. This simple practice keeps your main branches stable and clean because all the messy, in-progress work happens in an isolated space. A mistake on a feature branch is a minor blip. A mistake on <code>main</code> can bring the whole team to a grinding halt.</p><p>Finally, lean into <strong>thorough code reviews</strong>. Seriously. A second set of eyes is unbelievably good at spotting bugs, logic flaws, or even secrets you accidentally left in the code <em>before</em> it gets merged. A team that prioritizes solid reviews will find that "undoing a push" goes from a regular firefighting exercise to a rare, once-in-a-blue-moon exception.</p><h2 id="common-questions-about-undoing-a-push">Common Questions About Undoing a Push</h2><p>Even when you know the right commands, some situations can still leave you scratching your head. Let's walk through some of the most common questions developers face when they need to undo a <code>git push</code> and clean up the project history.</p><h3 id="what-if-someone-already-pulled-my-commit">What If Someone Already Pulled My Commit?</h3><p>This is the big one. The answer here completely changes your game plan. If there's even a chance someone has pulled the branch you need to fix, you should <strong>always use <code>git revert</code></strong>. Seriously.</p><p>Trying to use <code>git reset</code> and then force pushing will rewrite history on the remote server. For anyone who already has the old version, this is a nightmare. Their local repository will now be out of sync with the remote, leading to a tangled mess of merge conflicts that are a huge pain to sort out.</p><blockquote>Communication is your best friend here. In the very rare case you absolutely <em>must</em> reset a shared branch, you have to talk to every single developer on the team. They need to know exactly how to handle the history change on their end. If you can't do that, just stick to <code>revert</code>.</blockquote><h3 id="can-i-undo-a-merge-commit">Can I Undo a Merge Commit?</h3><p>Yep, and it happens more often than you'd think. You can safely undo a merge using <code>git revert</code>, but the command is a little different than reverting a regular commit.</p><p>You have to tell Git which parent from the merge you want to keep as the "mainline." You do this with the <code>-m</code> flag.</p><p>git revert -m 1</p><p>In this command, <code>-m 1</code> tells Git you want to preserve the history of the first parent—that’s the branch you merged <em>into</em>. This creates a new commit that effectively backs out all the changes brought in by the merge. It's so much safer than trying to <code>reset</code> a merge.</p><h3 id="is-force-pushing-ever-okay">Is Force Pushing Ever Okay?</h3><p>Using <code>git push --force</code> on a shared branch is almost always a terrible idea. It’s a sledgehammer that just overwrites the remote branch, and it can easily wipe out a teammate's work without any warning.</p><p>There’s a much safer way: <code>git push --force-with-lease</code>. This command adds a critical safety check before it does anything. It first verifies that no one else has pushed new work to the remote branch since you last pulled. If the remote has changed, the push gets rejected, saving you from accidentally overwriting their commits. It’s the only responsible way to force push.</p><p>And if you ever find yourself in a panic trying to recover a commit that got lost after a bad reset or rebase, the <code>reflog</code> is your safety net. We have a detailed guide that shows you how to <a href="https://articles.mergify.com/using-git-reflog-to-find-a-lost-commit-2/">use Git's reflog to find a lost commit</a>.</p><hr><p>At <strong>Mergify</strong>, we build tools to make your whole development workflow smoother and safer. Our Merge Queue prevents broken builds and keeps your main branch stable, which means you won't have to deal with these stressful "undo" scenarios nearly as often. <a href="https://mergify.com/?ref=articles.mergify.com">Learn how Mergify can streamline your team's code integration</a>.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>

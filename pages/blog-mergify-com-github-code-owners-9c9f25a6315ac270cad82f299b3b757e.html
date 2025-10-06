@@ -1,0 +1,562 @@
+<!DOCTYPE html><html lang="en" class="has-dark-text"><head>
+
+    <title>A Guide to GitHub Code Owners</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="preload" as="style" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+    <link rel="preload" as="script" href="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69">
+    
+    <link rel="preload" as="font" type="font/woff2" href="https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69" crossorigin="anonymous">
+<style>
+    @font-face {
+        font-family: "Inter";
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: optional;
+        src: url(https://articles.mergify.com/assets/fonts/inter-roman.woff2?v=925d9b7b69) format("woff2");
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+</style>
+
+    <link rel="stylesheet" type="text/css" href="https://articles.mergify.com/assets/built/screen.css?v=925d9b7b69">
+
+    <style>
+        :root {
+            --background-color: #ffffff
+        }
+    </style>
+
+    <script>
+        /* The script for calculating the color contrast has been taken from
+        https://gomakethings.com/dynamically-changing-the-text-color-based-on-background-color-contrast-with-vanilla-js/ */
+        var accentColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        accentColor = accentColor.trim().slice(1);
+
+        if (accentColor.length === 3) {
+            accentColor = accentColor[0] + accentColor[0] + accentColor[1] + accentColor[1] + accentColor[2] + accentColor[2];
+        }
+
+        var r = parseInt(accentColor.substr(0, 2), 16);
+        var g = parseInt(accentColor.substr(2, 2), 16);
+        var b = parseInt(accentColor.substr(4, 2), 16);
+        var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        var textColor = (yiq >= 128) ? 'dark' : 'light';
+
+        document.documentElement.className = `has-${textColor}-text`;
+    </script>
+
+    <meta name="description" content="A complete guide to using GitHub code owners. Learn the syntax, best practices, and advanced strategies to automate code reviews and manage your repositories.">
+    <link rel="icon" href="https://articles.mergify.com/content/images/size/w256h256/2024/10/mergify-brandmark-black.png" type="image/png">
+    <link rel="canonical" href="https://articles.mergify.com/github-code-owners/">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    
+    <meta property="og:site_name" content="Continuously Merging">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="A Guide to GitHub Code Owners">
+    <meta property="og:description" content="A complete guide to using GitHub code owners. Learn the syntax, best practices, and advanced strategies to automate code reviews and manage your repositories.">
+    <meta property="og:url" content="https://articles.mergify.com/github-code-owners/">
+    <meta property="og:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg">
+    <meta property="article:published_time" content="2025-09-22T08:09:41.000Z">
+    <meta property="article:modified_time" content="2025-09-22T08:09:44.000Z">
+    <meta property="article:tag" content="Basic Knowledge">
+    
+    <meta property="article:publisher" content="https://www.facebook.com/mergifyio">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="A Guide to GitHub Code Owners">
+    <meta name="twitter:description" content="A complete guide to using GitHub code owners. Learn the syntax, best practices, and advanced strategies to automate code reviews and manage your repositories.">
+    <meta name="twitter:url" content="https://articles.mergify.com/github-code-owners/">
+    <meta name="twitter:image" content="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg">
+    <meta name="twitter:label1" content="Written by">
+    <meta name="twitter:data1" content="Huguette Miramar">
+    <meta name="twitter:label2" content="Filed under">
+    <meta name="twitter:data2" content="Basic Knowledge">
+    <meta name="twitter:site" content="@mergifyio">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="576">
+    
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Continuously Merging",
+        "url": "https://articles.mergify.com/",
+        "logo": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/10/mergify-black.png"
+        }
+    },
+    "author": {
+        "@type": "Person",
+        "name": "Huguette Miramar",
+        "image": {
+            "@type": "ImageObject",
+            "url": "https://articles.mergify.com/content/images/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png",
+            "width": 1024,
+            "height": 1024
+        },
+        "url": "https://articles.mergify.com/author/hmiramar/",
+        "sameAs": []
+    },
+    "headline": "A Guide to GitHub Code Owners",
+    "url": "https://articles.mergify.com/github-code-owners/",
+    "datePublished": "2025-09-22T08:09:41.000Z",
+    "dateModified": "2025-09-22T08:09:44.000Z",
+    "image": {
+        "@type": "ImageObject",
+        "url": "https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg",
+        "width": 1024,
+        "height": 576
+    },
+    "keywords": "Basic Knowledge",
+    "description": "So, what exactly is GitHub&#x27;s CODEOWNERS file? At its core, it’s a simple text file that lives in your repository. Its job is to automatically assign specific developers or entire teams as reviewers for pull requests that touch certain parts of the codebase.\n\nThink of it as an automated routing system for your code reviews. It makes sure the right experts are always looped in, creating clear accountability and streamlining your entire development workflow from start to finish.\n\n\nWhy GitHub CODEOW",
+    "mainEntityOfPage": "https://articles.mergify.com/github-code-owners/"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 6.2">
+    <link rel="alternate" type="application/rss+xml" title="Continuously Merging" href="https://articles.mergify.com/rss/">
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/portal@~2.54/umd/portal.min.js" data-i18n="true" data-ghost="https://articles.mergify.com/" data-key="50314b9349822b3660c76c109e" data-api="https://mergify.ghost.io/ghost/api/content/" data-locale="en" data-members-signin-otc="false" crossorigin="anonymous"></script><style id="gh-members-styles">.gh-post-upgrade-cta-content,
+.gh-post-upgrade-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-align: center;
+    width: 100%;
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.gh-post-upgrade-cta-content {
+    border-radius: 8px;
+    padding: 40px 4vw;
+}
+
+.gh-post-upgrade-cta h2 {
+    color: #ffffff;
+    font-size: 28px;
+    letter-spacing: -0.2px;
+    margin: 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta p {
+    margin: 20px 0 0;
+    padding: 0;
+}
+
+.gh-post-upgrade-cta small {
+    font-size: 16px;
+    letter-spacing: -0.2px;
+}
+
+.gh-post-upgrade-cta a {
+    color: #ffffff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a:hover {
+    color: #ffffff;
+    opacity: 0.8;
+    box-shadow: none;
+    text-decoration: underline;
+}
+
+.gh-post-upgrade-cta a.gh-btn {
+    display: block;
+    background: #ffffff;
+    text-decoration: none;
+    margin: 28px 0 0;
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.gh-post-upgrade-cta a.gh-btn:hover {
+    opacity: 0.92;
+}</style>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/sodo-search.min.js" data-key="50314b9349822b3660c76c109e" data-styles="https://cdn.jsdelivr.net/ghost/sodo-search@~1.8/umd/main.css" data-sodo-search="https://mergify.ghost.io/" data-locale="en" crossorigin="anonymous"></script>
+    <script defer="" src="https://cdn.jsdelivr.net/ghost/announcement-bar@~1.1/umd/announcement-bar.min.js" data-announcement-bar="https://articles.mergify.com/" data-api-url="https://articles.mergify.com/members/api/announcement/" crossorigin="anonymous"></script>
+    <link href="https://articles.mergify.com/webmentions/receive/" rel="webmention">
+    <script defer="" src="/public/cards.min.js?v=925d9b7b69"></script>
+    <link rel="stylesheet" type="text/css" href="/public/cards.min.css?v=925d9b7b69">
+    <script defer="" src="/public/member-attribution.min.js?v=925d9b7b69"></script>
+    <script defer="" src="/public/ghost-stats.min.js?v=925d9b7b69" data-stringify-payload="false" data-datasource="analytics_events" data-storage="localStorage" data-host="https://articles.mergify.com/.ghost/analytics/api/v1/page_hit" tb_site_uuid="37032d0e-16f6-4f9b-8afd-6dde14b9eb8d" tb_post_uuid="f62148d5-d3e8-44cd-ab1d-a9bf45def7cc" tb_post_type="post" tb_member_uuid="undefined" tb_member_status="undefined"></script><style>:root {--ghost-accent-color: #a6a6a6;}</style>
+    <link rel="stylesheet" href="https://cdn.statically.io/gh/Mergifyio/www/main/blog.mergify.com/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" integrity="sha512-0aPQyyeZrWj9sCA46UlmWgKOP0mUipLQ6OZXu8l4IcAmD2u31EPEy9VcIMvl7SoAaKe8bLXZhYoMaE/in+gcgA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+<script defer="" data-domain="articles.mergify.com" src="https://plausible.io/js/script.hash.js"></script>
+<script>window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+
+<style>.App{text-align:center}.App-logo{height:40vmin;pointer-events:none}@media (prefers-reduced-motion: no-preference){.App-logo{animation:App-logo-spin infinite 20s linear}}.App-header{background-color:#282c34;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(10px + 2vmin);color:#fff}.App-link{color:#61dafb}@keyframes App-logo-spin{0%{transform:rotate(0)}to{transform:rotate(360deg)}}
+/*$vite$:1*/</style><style>.gh-announcement-bar,.gh-announcement-bar *{box-sizing:border-box!important}.gh-announcement-bar{position:relative;z-index:90;display:flex;align-items:center;justify-content:center;padding:12px 48px;min-height:48px;font-size:15px;line-height:23px;text-align:center}.gh-announcement-bar.light{background-color:#f0f0f0;color:#15171a}.gh-announcement-bar.accent{background-color:var(--ghost-accent-color);color:#fff}.gh-announcement-bar.dark{background-color:#15171a;color:#fff}.gh-announcement-bar *:not(path){all:unset}.gh-announcement-bar strong{font-weight:700}.gh-announcement-bar :is(i,em){font-style:italic}.gh-announcement-bar a{color:#fff;font-weight:700;text-decoration:underline;cursor:pointer}.gh-announcement-bar.light a{color:var(--ghost-accent-color)!important}.gh-announcement-bar button{position:absolute;top:50%;right:8px;display:flex;align-items:center;justify-content:center;margin-top:-16px;width:32px;height:32px;padding:0;background-color:transparent;border:0;color:#fff;cursor:pointer}.gh-announcement-bar.light button{color:#888}.gh-announcement-bar svg{width:10px;height:10px;fill:currentColor}
+/*$vite$:1*/</style></head>
+<body class="post-template tag-basic-knowledge has-sans-title has-sans-body"><div id="announcement-bar-root"><div class="gh-announcement-bar dark"><div class="gh-announcement-bar-content"><p dir="ltr"><span>🚀 </span><b><strong>Now GA:</strong></b><span> </span><a href="https://mergify.com/products/ci-insights" rel="noreferrer"><span>CI Insights</span></a><span> helps you spot flaky jobs, cut CI costs, and ship faster. </span><a href="https://dashboard.mergify.com" rel="noreferrer"><span>Try it free</span></a><span>.</span></p></div><button aria-label="close"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" height="16" width="16"><path stroke-linecap="round" stroke-width="0.4" fill="currentColor" stroke="#000000" stroke-linejoin="round" d="M.44,21.44a1.49,1.49,0,0,0,0,2.12,1.5,1.5,0,0,0,2.12,0l9.26-9.26a.25.25,0,0,1,.36,0l9.26,9.26a1.5,1.5,0,0,0,2.12,0,1.49,1.49,0,0,0,0-2.12L14.3,12.18a.25.25,0,0,1,0-.36l9.26-9.26A1.5,1.5,0,0,0,21.44.44L12.18,9.7a.25.25,0,0,1-.36,0L2.56.44A1.5,1.5,0,0,0,.44,2.56L9.7,11.82a.25.25,0,0,1,0,.36Z"></path></svg></button></div></div>
+
+<div class="gh-viewport">
+    
+    <header id="gh-navigation" class="gh-navigation is-left-logo gh-outer is-dropdown-loaded">
+    <div class="gh-navigation-inner gh-inner">
+
+        <div class="gh-navigation-brand">
+            <a class="gh-navigation-logo is-title" href="https://articles.mergify.com">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </a>
+            <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>            <button class="gh-burger gh-icon-button" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>            </button>
+        </div>
+
+        <nav class="gh-navigation-menu">
+            <ul class="nav">
+    <li class="nav-home"><a href="https://mergify.com">Home</a></li>
+    <li class="nav-blog"><a href="https://articles.mergify.com/">Blog</a></li>
+    <li class="nav-documentation"><a href="https://docs.mergify.com">Documentation</a></li>
+    <li class="nav-about"><a href="https://mergify.com/about">About</a></li>
+</ul>
+
+        </nav>
+
+        <div class="gh-navigation-actions">
+                <button class="gh-search gh-icon-button" aria-label="Search this site" data-ghost-search="">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" width="20" height="20"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>                <div class="gh-navigation-members">
+                            <a href="#/portal/signin" data-portal="signin" class="gh-portal-close">Sign in</a>
+                                <a class="gh-button gh-portal-close" href="#/portal/signup" data-portal="signup">Subscribe</a>
+                </div>
+        </div>
+
+    </div>
+</header>
+
+    
+
+<main class="gh-main">
+
+    <article class="gh-article post tag-basic-knowledge">
+
+        <header class="gh-article-header gh-canvas">
+
+                <a class="gh-article-tag" href="https://articles.mergify.com/tag/basic-knowledge/">Basic Knowledge</a>
+            <h1 class="gh-article-title is-title">A Guide to GitHub Code Owners</h1>
+
+            <div class="gh-article-meta">
+                <div class="gh-article-author-image instapaper_ignore">
+                            <a href="/author/hmiramar/">
+                                <img class="author-profile-image" src="/content/images/size/w160/2024/12/jdanjou_photo_profile_of_a_technical_writer_10ac3120-5fbf-4d6a-9bea-e52577af4e4e.png" alt="Huguette Miramar">
+                            </a>
+                </div>
+                <div class="gh-article-meta-wrapper">
+                    <h4 class="gh-article-author-name"><a href="/author/hmiramar/">Huguette Miramar</a></h4>
+                    <div class="gh-article-meta-content">
+                        <time class="gh-article-meta-date" datetime="2025-09-22">22 Sep 2025</time>
+                            <span class="gh-article-meta-length"><span class="bull">—</span> 13 min read</span>
+                    </div>
+                </div>
+            </div>
+
+                <figure class="gh-article-image">
+        <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg 320w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg 600w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg 960w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg 1200w,
+                    https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg 2000w" sizes="(max-width: 1200px) 100vw, 1120px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-07e31110-975c-46e6-a347-5cd161b2b0ba.jpg" alt="A Guide to GitHub Code Owners">
+    </figure>
+
+        </header>
+
+        <section class="gh-content gh-canvas is-body">
+            <p>So, what exactly is GitHub's <code>CODEOWNERS</code> file? At its core, it’s a simple text file that lives in your repository. Its job is to automatically assign specific developers or entire teams as reviewers for pull requests that touch certain parts of the codebase.</p><p>Think of it as an automated routing system for your code reviews. It makes sure the right experts are always looped in, creating clear accountability and streamlining your entire development workflow from start to finish.</p><h2 id="why-github-codeowners-is-your-secret-weapon">Why GitHub CODEOWNERS Is Your Secret Weapon</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/a020d4ac-73f9-445e-a7ab-367fe98c26c8.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Imagine a huge, bustling library where anyone can move or replace books without checking with the librarian who specializes in that section. What would you get? Chaos. Misplaced information. A steady drop in quality. A code repository without clear ownership often suffers the exact same fate, and that's precisely the problem <strong>GitHub code owners</strong> was built to solve.</p><p>The <code>CODEOWNERS</code> file acts as your project's team of digital librarians. It’s a powerful yet simple configuration file that maps parts of your repository to the people or teams responsible for them. When a developer opens a pull request that changes files covered by this map, <a href="https://github.com/?ref=articles.mergify.com">GitHub</a> automatically requests a review from the designated owners. Simple as that.</p><h3 id="moving-beyond-manual-assignment">Moving Beyond Manual Assignment</h3><p>Without a <code>CODEOWNERS</code> file, the review process is often a manual, error-prone mess. A junior developer might have no idea who the go-to expert is for a specific module. This leads them to either guess, drop a question in a noisy Slack channel, or tag a senior engineer who isn't the right person for the job.</p><p>This manual approach creates a few persistent headaches:</p><ul><li><strong>Review Bottlenecks:</strong> Pull requests just sit there, gathering dust while waiting for someone to notice them or for the right person to be manually assigned.</li><li><strong>Knowledge Hoarding:</strong> Expertise gets siloed with a few key individuals. This creates a massive "bus factor" risk, where project knowledge vanishes if one person goes on vacation or leaves the company.</li><li><strong>Unclear Responsibility:</strong> When something inevitably breaks in production, it’s a pain to trace who approved the change or who holds the ultimate responsibility for that part of the code.</li></ul><blockquote>By automating the assignment process, the <code>CODEOWNERS</code> file tackles these issues head-on. It codifies your team's knowledge, enforces accountability, and ensures every piece of code gets a second look from the most qualified person.</blockquote><p>In the end, this feature is so much more than a simple convenience. It's a foundational tool for building a scalable, high-quality engineering culture. It transforms your repository from a collaborative free-for-all into a well-oiled machine where ownership is clear, reviews are efficient, and code quality stays consistently high.</p><p>By implementing a <code>CODEOWNERS</code> file, you’re not just organizing your code—you’re empowering your team to ship better software, faster.</p><h2 id="the-real-benefits-of-using-a-codeowners-file">The Real Benefits of Using a <code>CODEOWNERS</code> File</h2><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/111a8b01-195e-411c-9240-2c5e2fc50048.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Putting a <code>CODEOWNERS</code> file in your repository does a lot more than just automate who gets tagged on a pull request. It’s a genuine shift in your development culture, starting with a powerful sense of accountability.</p><p>When developers are formally named as owners, they stop being just contributors and become true stewards of their code. This simple change almost always leads to a natural increase in code quality and a more proactive approach to maintenance. They start thinking about its long-term health, not just the immediate feature.</p><h3 id="supercharge-your-review-cycle">Supercharge Your Review Cycle</h3><p>One of the biggest wins is the immediate speed-up of your code review process. No more pull requests sitting in limbo while the author tries to figure out who the right reviewer is. The <code>CODEOWNERS</code> file acts like an intelligent router, instantly notifying the correct experts the moment a PR is opened.</p><p>This isn't just a minor convenience; it's a massive efficiency boost. We've seen teams that properly define ownership with <strong>GitHub code owners</strong> slash their pull request review times by over <strong>30%</strong>. You get rid of that initial delay and confusion, which means teams can merge changes faster, shorten feedback loops, and ultimately ship more frequently.</p><blockquote>By codifying responsibility, you create a system where expertise is automatically directed where it's needed most. This not only speeds up reviews but also improves their quality, as the right eyes are always on the code.</blockquote><h3 id="create-a-living-project-map">Create a Living Project Map</h3><p>Jumping into a large, complex project can feel overwhelming for a new team member. A well-maintained <code>CODEOWNERS</code> file becomes a living, breathing map of the entire codebase, clearly pointing out who is responsible for each piece of the puzzle. It’s an incredible onboarding tool.</p><p>Instead of guessing or interrupting a senior dev, a new hire can just check the file to find the go-to person for any part of the application. This drastically shortens their time to productivity and helps them feel like part of the team much faster.</p><p>This clarity also strengthens your other repository safeguards. When you pair a <code>CODEOWNERS</code> file with branch protection rules, for example, you create a mandatory quality gate that can’t be bypassed. To see how these features work together, you can explore our guide on <a href="https://articles.mergify.com/github-branch-protection-what-it-is-and-why-it-matters/">GitHub branch protection</a>. This isn't just about adding a feature; it's a strategic move for building a more efficient and stable engineering team.</p><h2 id="mastering-the-code-owners-file-syntax">Mastering the Code Owners File Syntax</h2><p>To get GitHub code owners working for you, you first need to get comfortable with the <code>CODEOWNERS</code> file itself. It’s just a plain text file, but it uses a simple, rule-based syntax that tells GitHub who’s responsible for what. Think of it as a set of instructions for a digital librarian who automatically knows who to ping for a review.</p><p>The file's location actually matters. You can drop it in the root of your repository, tuck it away in a <code>docs/</code> folder, or place it in the <code>.github/</code> directory. If you happen to have <code>CODEOWNERS</code> files in more than one of those spots, GitHub has a clear pecking order: it checks <code>.github/</code> first, then the root, and finally <code>docs/</code>. Most teams just stick with <code>.github/CODEOWNERS</code> to keep things simple and consistent.</p><h3 id="the-basic-structure-of-a-rule">The Basic Structure of a Rule</h3><p>Every line in the file defines a single ownership rule. The format couldn't be simpler: a file path pattern followed by one or more owners. An owner can be a GitHub username or a team name—just make sure to prefix it with an <code>@</code>.</p><h1 id="this-is-a-comment-lines-starting-with-are-ignored">This is a comment. Lines starting with # are ignored.</h1><h1 id="pattern-owners">Pattern Owner(s)</h1><p>/apps/api/ @backend-team @security-lead<br>*.js @frontend-team<br>docs/README.md @alice @bob</p><p>The real power of the <code>CODEOWNERS</code> file comes from its specificity and order. GitHub reads the rules from top to bottom, and the <strong>last matching pattern for any given file is the one that wins</strong>. This is a game-changer because it lets you set broad, general ownership rules at the top and then carve out specific exceptions for certain files or subdirectories further down.</p><p>The infographic below nails this concept, showing how a general rule gets overridden by more specific ones down the line.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/12076f22-a898-4361-8084-aa42399c86a8.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>As you can see, a global owner for all files (<code>*</code>) can be superseded by a team for a whole directory (<code>/src/*</code>), and finally by a single expert for one specific component (<code>/src/components/Button.js</code>). It's all about that last match.</p><h3 id="code-owners-syntax-quick-reference">Code Owners Syntax Quick Reference</h3><p>You don't have to list every single file path. The <code>CODEOWNERS</code> syntax supports wildcards and other patterns that make the rules flexible and easy to manage. Getting these patterns right is key to building a low-maintenance, high-impact ownership strategy.</p><p>Here’s a quick cheat sheet for the most common patterns you'll find yourself using.</p>
+<!--kg-card-begin: html-->
+<div class="gh-table"><table>
+<thead>
+<tr>
+<th align="left">Pattern</th>
+<th align="left">Description</th>
+<th align="left">Example Owner(s)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>*</code></td>
+<td align="left">Matches every file in the repository. Often used as a catch-all at the top of the file.</td>
+<td align="left"><code>@senior-devs</code></td>
+</tr>
+<tr>
+<td align="left"><code>*.js</code></td>
+<td align="left">Matches any file ending with the <code>.js</code> extension, regardless of its location.</td>
+<td align="left"><code>@frontend-team</code></td>
+</tr>
+<tr>
+<td align="left"><code>docs/</code></td>
+<td align="left">Matches everything inside the <code>docs/</code> directory.</td>
+<td align="left"><code>@documentation-writers</code></td>
+</tr>
+<tr>
+<td align="left"><code>/build/</code></td>
+<td align="left">Matches the <code>build</code> directory only at the root level.</td>
+<td align="left"><code>@devops-team</code></td>
+</tr>
+<tr>
+<td align="left"><code>libs/**/</code></td>
+<td align="left">Matches all files and folders nested anywhere inside the <code>libs</code> directory.</td>
+<td align="left"><code>@platform-squad</code></td>
+</tr>
+<tr>
+<td align="left"><code>foo/bar.go</code></td>
+<td align="left">Matches a specific file at an exact path.</td>
+<td align="left"><code>@alice</code></td>
+</tr>
+</tbody></table></div>
+<!--kg-card-end: html-->
+<p>Mastering these simple patterns gives you a ton of control, letting you assign ownership from the broadest strokes down to the finest details.</p><blockquote>A key principle to remember is that ownership requires permission. Designated owners must have <strong>write access</strong> to the repository for their assignment to be valid. This ensures that only trusted contributors can approve changes in critical areas.</blockquote><p>For this whole system to work, both the individual users and the teams you list as owners need the right permissions in the repository. This isn't just a suggestion; as <a href="https://docs.github.com/articles/about-code-owners?ref=articles.mergify.com">GitHub's official documentation</a> explains, it’s a core part of the security model that powers required reviews. It's what prevents pull requests from being merged until an authorized owner gives their stamp of approval, making the <code>CODEOWNERS</code> file a reliable gatekeeper for your codebase.</p><h2 id="how-to-set-up-your-first-code-owners-file">How to Set Up Your First Code Owners File</h2><p>Alright, let's move from theory to practice. Getting your first <code>CODEOWNERS</code> file up and running is surprisingly straightforward. In just a few minutes, you can bring a whole new level of clarity to your review process.</p><p>Here’s a quick walkthrough to get it done right. We'll create the file, define a simple rule, and then test it out with a pull request to see it in action.</p><h3 id="step-1-create-the-codeowners-file">Step 1: Create the CODEOWNERS File</h3><p>First thing's first: you need to create the <code>CODEOWNERS</code> file in the right spot. While GitHub lets you place it in the root or <code>docs/</code> folder, the community standard—and frankly, the best practice—is to put it inside the <code>.github/</code> directory.</p><ol><li>Head over to your repository on GitHub.</li><li>Click the "Add file" button, then choose "Create new file."</li><li>In the file name box, type <code>.github/CODEOWNERS</code>. This nifty trick creates the folder and the file all at once.</li></ol><p>Putting it here keeps all your repository's configuration files neatly organized in one place. It’s just cleaner, and it's what most dev teams do.</p><h3 id="step-2-write-your-first-ownership-rule">Step 2: Write Your First Ownership Rule</h3><p>With the file created, it's time to add your first rule. Let's keep it simple for now. Pick a critical or frequently changed part of your codebase—something like the API directory is a perfect candidate—and assign an owner.</p><p>In your new <code>CODEOWNERS</code> file, just add this single line:</p><p>/src/api/ @my-org/backend-team</p><p>This one line tells GitHub a simple, powerful instruction: any changes to any file inside the <code>/src/api/</code> directory must get a review from the <code>@my-org/backend-team</code>. Using a team here instead of a single person is a pro move; it prevents bottlenecks if someone is on vacation or swamped.</p><blockquote>A key thing to remember: the last matching pattern always wins. This means you can start with broad rules at the top and then get more specific for sub-folders or individual files further down as your project grows.</blockquote><p>Once you’ve added your rule, go ahead and commit the new <code>CODEOWNERS</code> file directly to your main branch.</p><h3 id="step-3-test-your-new-rule">Step 3: Test Your New Rule</h3><p>Now for the fun part—seeing your automation actually work.</p><p>To test the setup, create a new branch and make a tiny change to any file inside <code>/src/api/</code>. It can be as simple as adding a comment.</p><p>Once you commit the change, open a new pull request. The moment you create it, you'll see the magic happen. To get a better handle on all the stages of this process, you can check out our detailed guide on the <a href="https://articles.mergify.com/pull-request-github/">GitHub pull request lifecycle</a>.</p><p>The screenshot below shows exactly what you should expect to see on the right-hand side of your new pull request.</p><p></p><figure class="kg-card kg-image-card"><img src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/2d758313-b371-4e31-aef5-78307e1183fb.jpg" class="kg-image" alt="Image" loading="lazy"></figure><p></p><p>Just like that, GitHub has automatically tagged the <code>backend-team</code> as a required reviewer, all based on the rule you just wrote. Your system is now live, ensuring the right experts are always pulled into the conversation without anyone having to lift a finger.</p><h2 id="advanced-strategies-and-best-practices">Advanced Strategies and Best Practices</h2><p>Once your <code>CODEOWNERS</code> file is in place, you can go way beyond basic assignments and start using the kinds of advanced tactics high-performing teams rely on. The single most powerful move? Integrating <strong>GitHub code owners</strong> with your branch protection rules to create an unskippable quality gate.</p><p>Go into your settings for a critical branch like <code>main</code> and enable "Require a pull request before merging" and, crucially, "Require review from Code Owners." Just like that, you've made owner approval mandatory. This simple change ensures no code can slip into production without a sign-off from the designated expert, effectively hard-coding your review policy right into your repository's workflow.</p><h3 id="using-tiered-ownership-for-precision">Using Tiered Ownership for Precision</h3><p>One of the most effective techniques is creating a tiered ownership structure. The <code>CODEOWNERS</code> file is read from top to bottom, but the <strong>last matching rule for a specific file always takes precedence</strong>. This little detail is incredibly powerful. It means you can set broad, general ownership at the top of the file and then get more granular with specific overrides further down.</p><p>For example, you could assign an entire application directory to a senior team, then assign specific, critical components to the individual developers who know them inside and out.</p><ul><li><code>apps/billing/ @platform-team</code> # Broad ownership</li><li><code>apps/billing/payment-processor.js @alice</code> # Specific override</li></ul><p>This tiered approach ensures that while the whole team has a sense of responsibility, the most relevant expert is always looped in for critical changes. It’s the perfect blend of general oversight and specialized review.</p><blockquote>The core idea is to treat your CODEOWNERS file not as a static list, but as a dynamic map of your team's expertise. As your project evolves, this file should evolve with it, reflecting changes in responsibility and team structure.</blockquote><h3 id="managing-ownership-at-scale">Managing Ownership at Scale</h3><p>As projects get bigger, just managing ownership can become a job in itself. What do you do with shared concerns like CI/CD configurations in the <code>.github/workflows/</code> directory or the global documentation? The smart move is to assign these to cross-functional or platform teams.</p><ul><li><code>.github/workflows/ @devops-team</code></li><li><code>docs/ @documentation-guild</code></li></ul><p>This setup prevents a single feature team from becoming a bottleneck for changes that affect everyone. For massive monorepos, this strategy isn't just nice—it's essential. Just look at GitHub's own primary codebase, a Ruby on Rails monolith with over <strong>4.2 million lines of code</strong>. It scaled beyond a single <code>CODEOWNERS</code> file by adding a <code>SERVICEOWNERS</code> layer for more flexible grouping. You can learn more about how GitHub organizes its massive codebase and see these principles applied at an extreme scale.</p><p>Automating these advanced workflows is the final piece of the puzzle. Pairing your <code>CODEOWNERS</code> file with a merge queue, for example, can create a highly efficient, hands-off pipeline. You can take your repository management to the next level by learning more about <a href="https://articles.mergify.com/pull-request-automation/">automating your pull request workflow</a>. By combining clear ownership with smart automation, you can maintain both order and quality, no matter how complex your repository becomes.</p><h2 id="frequently-asked-questions">Frequently Asked Questions</h2><p>As you start weaving the <strong>GitHub code owners</strong> feature into your daily workflow, you're bound to run into some specific questions and odd edge cases. This section is your go-to guide for clear answers on the most common puzzles, helping you sort out those tricky situations with confidence. Let's get into the details you'll most likely face.</p><h3 id="what-happens-if-a-code-owner-is-unavailable">What Happens If a Code Owner Is Unavailable?</h3><p>This is probably one of the most critical things to plan for if you want to keep work flowing smoothly. If you assign ownership to just one person and they're on vacation, out sick, or even leave the company, any pull request needing their sign-off is dead in the water. That's a surefire way to bring your entire development pipeline to a screeching halt.</p><p>The best way to sidestep this bottleneck is to assign ownership to a <a href="https://docs.github.com/en/organizations/organizing-members-into-teams/about-teams?ref=articles.mergify.com">GitHub team</a>, like <code>@my-org/backend-team</code>. This creates built-in redundancy right away. Any member of that team can approve the pull request, so development never gets held up waiting for a single person. Plus, when someone leaves, you just update the team's roster instead of hunting down and editing every mention of their username in the <code>CODEOWNERS</code> file.</p><h3 id="can-i-require-multiple-approvals">Can I Require Multiple Approvals?</h3><p>The <code>CODEOWNERS</code> file itself doesn't have a special syntax for demanding multiple approvals. If you have a rule like <code>*.js @alice @bob @charlie</code>, a single approval from either Alice, Bob, or Charlie is all it takes to satisfy that rule.</p><p>To enforce multiple approvals, you need to combine your <code>CODEOWNERS</code> file with GitHub's branch protection rules. It’s a two-step process:</p><ol><li>Head over to your repository’s <strong>Settings &gt; Branches</strong>.</li><li>Add or edit a protection rule for your target branch (like <code>main</code>).</li><li>Check the box for <strong>"Require a pull request before merging."</strong></li><li>Then, enable <strong>"Require approvals"</strong> and set the number to whatever you need, like <strong>2</strong>.</li></ol><p>This setup creates a much stronger quality gate. Even after the code owner gives their thumbs-up, the pull request still needs a second review from another team member before it can be merged.</p><h3 id="how-does-this-feature-work-with-monorepos">How Does This Feature Work with Monorepos?</h3><p>The <code>CODEOWNERS</code> file is practically essential for managing large monorepos where different teams all work in the same repository. You can use a single, central file in the root <code>.github/</code> directory to map out ownership across all the different projects, apps, and shared libraries. It becomes the single source of truth for who owns what.</p><p>For instance, you can structure your file to route reviews to the right people automatically:</p><ul><li><code>apps/web-app/ @frontend-team</code></li><li><code>apps/mobile-app/ @mobile-team</code></li><li><code>libs/database/ @data-team</code></li><li><code>libs/auth/ @security-team</code></li></ul><p>This is incredibly effective because it cuts down on notification noise. A change to the mobile app’s code will only ping the mobile team, not the entire engineering organization. The "last matching pattern takes precedence" rule is a huge help here, as it lets you set broad ownership at the top and then carve out specific exceptions for sub-folders.</p><blockquote>Quick heads-up: As of <strong>May 20, 2025</strong>, GitHub will retire the <code>dependabot.yml</code> reviewers option. This makes <code>CODEOWNERS</code> the one and only way to manage reviewers for both human and Dependabot pull requests, simplifying your configuration and making a well-kept <code>CODEOWNERS</code> file more important than ever.</blockquote><h3 id="should-i-use-comments-in-my-code-owners-file">Should I Use Comments in My Code Owners File?</h3><p>Yes, absolutely. As your repository and team scale, your <code>CODEOWNERS</code> file will get more complicated. Using comments (any line starting with a <code>#</code>) and blank lines is a critical best practice. It keeps the file readable and much easier to maintain over time.</p><p>Think of comments as documentation for your future self and for new hires. They’re perfect for:</p><ul><li><strong>Explaining tricky rules:</strong> Add a quick note about why a specific person or team owns a critical file.</li><li><strong>Grouping related sections:</strong> Use headers like <code># === API Services ===</code> or <code># === Shared Libraries ===</code> to organize rules logically.</li><li><strong>Leaving temporary notes:</strong> You can add a <code># TODO:</code> to remind the team to update ownership after a big refactor.</li></ul><p>A well-commented file is easier to debug and less prone to accidental mistakes, making it a key part of any scalable ownership strategy.</p><hr><p>At <strong>Mergify</strong>, we help you automate these complex workflows. Our merge queue and CI optimization tools work seamlessly with your <code>CODEOWNERS</code> setup to ensure your codebase remains stable and your team stays productive. See how you can take control of your merge process at <a href="https://mergify.com/?ref=articles.mergify.com">https://mergify.com</a>.</p>
+        </section>
+
+    </article>
+
+
+</main>
+
+
+            <section class="gh-container is-grid gh-outer">
+                <div class="gh-container-inner gh-inner">
+                    <h2 class="gh-container-title">Read more</h2>
+                    <div class="gh-feed">
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-3/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-1ac67b40-3ecd-4426-9263-16dfe469a103.jpg" alt="Your Guide to Building Jenkins #CICD Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Your Guide to Building Jenkins #CICD Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think of CI/CD, there's a good chance Jenkins is the first name that comes to mind. It's a powerhouse open-source automation server that essentially runs the entire software delivery lifecycle. A solid Jenkins #CICD pipeline automates everything from the moment you commit code</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-06">06 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/cicd-jenkins-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-28bdfcd3-ec06-483d-86e8-3b522c4ed42f.jpg" alt="A Practical Guide to CICD Jenkins Pipelines" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">A Practical Guide to CICD Jenkins Pipelines</h3>
+                    <p class="gh-card-excerpt is-body">When you think about CI/CD, Jenkins is almost impossible to ignore. It’s the open-source automation server that essentially acts as the central engine for your entire development pipeline, connecting everything from your Git repository to your production environment. The end goal? Faster, more reliable software releases.
+
+
+Why Jenkins</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-05">05 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/jenkins-cicd-2/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-88b08c9b-7fbc-4981-92b4-9d2deacfa537.jpg" alt="Master Jenkins CI/CD Pipelines for Better DevOps" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Jenkins CI/CD Pipelines for Better DevOps</h3>
+                    <p class="gh-card-excerpt is-body">When you hear "CI/CD," there's a good chance Jenkins comes to mind. It's the open-source automation server that has been at the heart of countless development pipelines for years. At its core, Jenkins is all about automating the build, test, and deploy cycle,</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-04">04 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                            <article class="gh-card post">
+    <a class="gh-card-link" href="/git-fetch-all-branches/">
+            <figure class="gh-card-image">
+                <img srcset="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 160w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 320w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 600w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 960w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 1200w,
+                            https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg 2000w" sizes="320px" src="https://cdn.outrank.so/645bcbda-761f-4f8c-ab74-f91d914c7aa5/featured-image-4ce8511c-4010-4088-a8a8-9d2979227913.jpg" alt="Master Git Fetch All Branches for Seamless Syncing" loading="lazy">
+            </figure>
+        <div class="gh-card-wrapper">
+            <h3 class="gh-card-title is-title">Master Git Fetch All Branches for Seamless Syncing</h3>
+                    <p class="gh-card-excerpt is-body">We’ve all been there. You run a quick git pull expecting a simple update, but instead, you're thrown into a maze of unexpected merge conflicts from someone else's unfinished work. It’s a frustrating and common scenario.
+
+There's a much safer way: git</p>
+            <footer class="gh-card-meta">
+<!--
+             -->
+                    <span class="gh-card-author">By Huguette Miramar</span>
+                    <time class="gh-card-date" datetime="2025-10-03">03 Oct 2025</time>
+                <!--
+         --></footer>
+        </div>
+    </a>
+</article>
+                    </div>
+                </div>
+            </section>
+
+    
+    <footer class="gh-footer gh-outer">
+    <div class="gh-footer-inner gh-inner">
+
+        <div class="gh-footer-bar">
+            <span class="gh-footer-logo is-title">
+                    <img src="https://articles.mergify.com/content/images/2024/10/mergify-black.png" alt="Continuously Merging">
+            </span>
+            <nav class="gh-footer-menu">
+                
+            </nav>
+            <div class="gh-footer-copyright">
+                Powered by <a href="https://ghost.org/" target="_blank" rel="noopener">Ghost</a>
+            </div>
+        </div>
+
+                <section class="gh-footer-signup">
+                    <h2 class="gh-footer-signup-header is-title">
+                        Continuously Merging
+                    </h2>
+                    <p class="gh-footer-signup-subhead is-body">
+                        Writing about continuous merge, software development, CI/CD and technical topics.
+                    </p>
+                    <form class="gh-form" data-members-form="">
+    <input class="gh-form-input" id="footer-email" name="email" type="email" placeholder="jamie@example.com" required="" data-members-email="">
+    <button class="gh-button" type="submit" aria-label="Subscribe">
+        <span><span>Subscribe</span> <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"></path></svg></span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 24 24">
+    <g stroke-linecap="round" stroke-width="2" fill="currentColor" stroke="none" stroke-linejoin="round" class="nc-icon-wrapper">
+        <g class="nc-loop-dots-4-24-icon-o">
+            <circle cx="4" cy="12" r="3"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+            <circle cx="20" cy="12" r="3"></circle>
+        </g>
+        <style data-cap="butt">
+            .nc-loop-dots-4-24-icon-o{--animation-duration:0.8s}
+            .nc-loop-dots-4-24-icon-o *{opacity:.4;transform:scale(.75);animation:nc-loop-dots-4-anim var(--animation-duration) infinite}
+            .nc-loop-dots-4-24-icon-o :nth-child(1){transform-origin:4px 12px;animation-delay:-.3s;animation-delay:calc(var(--animation-duration)/-2.666)}
+            .nc-loop-dots-4-24-icon-o :nth-child(2){transform-origin:12px 12px;animation-delay:-.15s;animation-delay:calc(var(--animation-duration)/-5.333)}
+            .nc-loop-dots-4-24-icon-o :nth-child(3){transform-origin:20px 12px}
+            @keyframes nc-loop-dots-4-anim{0%,100%{opacity:.4;transform:scale(.75)}50%{opacity:1;transform:scale(1)}}
+        </style>
+    </g>
+</svg>        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"></path>
+    <style>
+        .checkmark {
+            width: 40px;
+            height: 40px;
+            display: block;
+            stroke-width: 2.5;
+            stroke: currentColor;
+            stroke-miterlimit: 10;
+        }
+
+        .checkmark__check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke .3s cubic-bezier(0.650, 0.000, 0.450, 1.000) forwards;
+        }
+
+        @keyframes stroke {
+            100% { stroke-dashoffset: 0; }
+        }
+    </style>
+</svg>    </button>
+    <p data-members-error=""></p>
+</form>                </section>
+
+    </div>
+</footer>    
+</div>
+
+    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="pswp__bg"></div>
+
+    <div class="pswp__scroll-wrap">
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://articles.mergify.com/assets/built/source.js?v=925d9b7b69"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/2.0.0/twemoji.min.js" integrity="sha512-7truTWYOQL7Lu9+y3/vzCwhyWdedgh87SSqqWRACxLWYi1n4cJATEfQvoSasZ76cvoboKl5QrVlaCc05b71jWQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/highlight.min.js" integrity="sha512-yUUc0qWm2rhM7X0EFe82LNnv2moqArj5nro/w1bi05A09hRVeIZbN6jlMoyu0+4I/Bu4Ck/85JQIU82T82M28w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", hljs.highlightAll);
+document.addEventListener("DOMContentLoaded", function () {
+    	twemoji.parse(document, {
+	    folder: 'svg',
+	    ext: '.svg'
+	});
+});
+</script>
+
+
+
+<div id="ghost-portal-root"><iframe srcdoc="&lt;!DOCTYPE html&gt;" data-testid="portal-trigger-frame" title="portal-trigger" frameborder="0" dir="ltr" class="gh-portal-triggerbtn-iframe" style="z-index: 3999998; position: fixed; bottom: 0px; right: 0px; width: 500px; max-width: 500px; height: 98px; animation: 250ms ease 0s 1 normal none running animation-bhegco; transition: opacity 0.3s; overflow: hidden;"></iframe></div><div id="sodo-search-root"></div></body></html>
